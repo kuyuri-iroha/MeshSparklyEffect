@@ -140,6 +140,16 @@
       },
       "hash": "9a54e18414744ec18ae34abeb06d6778f0e4cb9e"
     },
+    "com.unity.visualeffectgraph": {
+      "version": "10.5.0",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.shadergraph": "10.5.0",
+        "com.unity.render-pipelines.core": "10.5.0"
+      },
+      "url": "https://packages.unity.com"
+    },
     "com.unity.modules.ai": {
       "version": "1.0.0",
       "depth": 0,

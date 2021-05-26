@@ -250,9 +250,9 @@ Material:
     - _ZWriteMode: 1
     - _simpleUI: 0
     - _utsTechnique: 0
-    - _utsVersionX: 8
-    - _utsVersionY: 0
-    - _utsVersionZ: 0
+    - _utsVersionX: 2
+    - _utsVersionY: 2
+    - _utsVersionZ: 3
     m_Colors:
     - _1st_ShadeColor: {r: 1, g: 1, b: 1, a: 1}
     - _2nd_ShadeColor: {r: 1, g: 1, b: 1, a: 1}
@@ -269,6 +269,7 @@ Material:
     - _RimLightColor: {r: 1, g: 1, b: 1, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
     - _ViewShift: {r: 0, g: 0, b: 0, a: 1}
+  m_BuildTextureStacks: []
 --- !u!114 &7872635150087232902
 MonoBehaviour:
   m_ObjectHideFlags: 11
