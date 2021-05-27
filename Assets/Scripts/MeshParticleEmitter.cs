@@ -67,9 +67,14 @@ public class MeshParticleEmitter : MonoBehaviour
         var r = Mathf.Sqrt(count);
         var width = (int) Mathf.Ceil(r);
 
-        var uvColors = uvs.Select(uv => new Color(uv.x, uv.y, 0.0f));
+        var colors = new Color[width * width];
+        for (var i = 0; i < width * width; i++)
+        {
+            var uv = uvs[i % count];
+            colors[i] = new Color(uv.x, uv.y, 0.0f);
+        }
 
-        var tex = CreateMap(uvColors, width, width);
+        var tex = CreateMap(colors, width, width);
 
         return tex;
     }
@@ -82,9 +87,14 @@ public class MeshParticleEmitter : MonoBehaviour
         var r = Mathf.Sqrt(count);
         var width = (int) Mathf.Ceil(r);
 
-        var normalColors = normals.Select(norm => new Color(norm.x, norm.y, norm.z));
+        var colors = new Color[width * width];
+        for (var i = 0; i < width * width; i++)
+        {
+            var norm = normals[i % count];
+            colors[i] = new Color(norm.x, norm.y, norm.z);
+        }
 
-        var tex = CreateMap(normalColors, width, width);
+        var tex = CreateMap(colors, width, width);
 
         return tex;
     }
@@ -97,9 +107,14 @@ public class MeshParticleEmitter : MonoBehaviour
         var r = Mathf.Sqrt(count);
         var width = (int) Mathf.Ceil(r);
 
-        var positions = vertices.Select(vtx => new Color(vtx.x, vtx.y, vtx.z));
+        var colors = new Color[width * width];
+        for (var i = 0; i < width * width; i++)
+        {
+            var vtx = vertices[i % count];
+            colors[i] = new Color(vtx.x, vtx.y, vtx.z);
+        }
 
-        var tex = CreateMap(positions, width, width);
+        var tex = CreateMap(colors, width, width);
 
         return tex;
     }
