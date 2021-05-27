@@ -46,7 +46,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetMesh: {fileID: 0}
   effect: {fileID: 3405137010498294291}
-  colorTexture: {fileID: 2800000, guid: 80ada43de59e0194ca1b5e0f80c58224, type: 3}
+  colorTexture: {fileID: 0}
 --- !u!1 &3405137010498294294
 GameObject:
   m_ObjectHideFlags: 0
@@ -58,7 +58,6 @@ GameObject:
   - component: {fileID: 3405137010498294293}
   - component: {fileID: 3405137010498294291}
   - component: {fileID: 3405137010498294292}
-  - component: {fileID: 3405137010498294290}
   m_Layer: 0
   m_Name: VFX
   m_TagString: Untagged
@@ -73,8 +72,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3405137010498294294}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.009, y: 0.000000059604645, z: 0.071}
+  m_LocalRotation: {x: 0.00000009362675, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 3405137010243692924}
@@ -124,7 +123,7 @@ VisualEffect:
       - m_Value: {fileID: 0}
         m_Name: _PositionMap
         m_Overridden: 1
-      - m_Value: {fileID: 2800000, guid: 80ada43de59e0194ca1b5e0f80c58224, type: 3}
+      - m_Value: {fileID: 0}
         m_Name: _ColorTexture
         m_Overridden: 1
       - m_Value: {fileID: 0}
@@ -172,29 +171,3 @@ VFXRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!1773428102 &3405137010498294290
-ParentConstraint:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3405137010498294294}
-  m_Enabled: 1
-  m_Weight: 1
-  m_TranslationAtRest: {x: 0.009, y: 0, z: 0.071}
-  m_RotationAtRest: {x: 0, y: 0, z: 0}
-  m_TranslationOffsets:
-  - {x: 0, y: 0, z: 0}
-  m_RotationOffsets:
-  - {x: 0, y: 0, z: 0}
-  m_AffectTranslationX: 1
-  m_AffectTranslationY: 1
-  m_AffectTranslationZ: 1
-  m_AffectRotationX: 1
-  m_AffectRotationY: 1
-  m_AffectRotationZ: 1
-  m_IsContraintActive: 1
-  m_IsLocked: 1
-  m_Sources:
-  - sourceTransform: {fileID: 0}
-    weight: 1
