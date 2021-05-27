@@ -16,14 +16,20 @@ public class MeshParticleEmitter : MonoBehaviour
 
     private Texture2D _positionMap = null;
     private Texture2D _normalMap = null;
-    private Texture2D _colorMap = null;
+    private Texture2D _uvMap = null;
+
+    private int _targetMeshInstanceID;
+    private int _colorTextureInstanceID;
 
     [ContextMenu("CreateMaps")]
     private void CreateMaps()
     {
         _positionMap = MeshToPositionMap(targetMesh.sharedMesh);
         _normalMap = MeshToNormalMap(targetMesh.sharedMesh);
-        _colorMap = GenerateColorMap(targetMesh.sharedMesh);
+        _uvMap = MeshToUVMap(targetMesh.sharedMesh);
+
+        _targetMeshInstanceID = targetMesh.GetInstanceID();
+        _colorTextureInstanceID = colorTexture.GetInstanceID();
     }
 
     private void Start()
@@ -39,15 +45,33 @@ public class MeshParticleEmitter : MonoBehaviour
             return;
         }
 
-        if (!_positionMap || !_colorMap)
-        {
-            //Debug.LogError("テクスチャが生成されていません。CreateMapsを実行してください。");
-            return;
-        }
+        if (ResourcesHasChanged()) CreateMaps();
 
         effect.SetTexture("_PositionMap", _positionMap);
-        effect.SetTexture("_ColorMap", _colorMap);
+        effect.SetTexture("_ColorTexture", colorTexture);
         effect.SetTexture("_NormalMap", _normalMap);
+        effect.SetTexture("_UVMap", _uvMap);
+    }
+
+    private bool ResourcesHasChanged()
+    {
+        return _targetMeshInstanceID != targetMesh.GetInstanceID() ||
+               _colorTextureInstanceID != colorTexture.GetInstanceID();
+    }
+
+    private Texture2D MeshToUVMap(Mesh mesh)
+    {
+        var uvs = mesh.uv;
+        var count = uvs.Count();
+
+        var r = Mathf.Sqrt(count);
+        var width = (int) Mathf.Ceil(r);
+
+        var uvColors = uvs.Select(uv => new Color(uv.x, uv.y, 0.0f));
+
+        var tex = CreateMap(uvColors, width, width);
+
+        return tex;
     }
 
     private Texture2D MeshToNormalMap(Mesh mesh)
@@ -63,21 +87,6 @@ public class MeshParticleEmitter : MonoBehaviour
         var tex = CreateMap(normalColors, width, width);
 
         return tex;
-    }
-
-    private Texture2D GenerateColorMap(Mesh mesh)
-    {
-        var uvs = mesh.uv;
-        var count = uvs.Length;
-
-        var r = Mathf.Sqrt(count);
-        var width = (int) Mathf.Ceil(r);
-
-        var pixels = colorTexture.GetPixels();
-
-        var colors = uvs.Select(uv => pixels[(int) (uv.x * colorTexture.width) + (int) (uv.y * colorTexture.width)]);
-
-        return CreateMap(colors, width, width);
     }
 
     static Texture2D MeshToPositionMap(Mesh mesh)
