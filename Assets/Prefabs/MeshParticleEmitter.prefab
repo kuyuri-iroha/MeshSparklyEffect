@@ -47,6 +47,25 @@ MonoBehaviour:
   targetMesh: {fileID: 0}
   effect: {fileID: 3405137010498294291}
   colorTexture: {fileID: 0}
+  rate: 0
+  width: 0
+  alpha: 0
+  sizeDecayCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  sizeMin: 0
+  sizeMax: 0
+  lifeTimeMin: 0
+  lifeTimeMax: 0
+  emissionIntensity: 0
+  rotateDegreeMin: 0
+  rotateDegreeMax: 0
+  offset: 0
+  useTexture: 0
+  sparkleTexture: {fileID: 0}
 --- !u!1 &3405137010498294294
 GameObject:
   m_ObjectHideFlags: 0
@@ -95,7 +114,37 @@ VisualEffect:
   m_ResourceVersion: 1
   m_PropertySheet:
     m_Float:
-      m_Array: []
+      m_Array:
+      - m_Value: 0
+        m_Name: Alpha
+        m_Overridden: 1
+      - m_Value: 0
+        m_Name: EmissionIntensity
+        m_Overridden: 1
+      - m_Value: 0
+        m_Name: LifeTimeMax
+        m_Overridden: 1
+      - m_Value: 0
+        m_Name: LifeTimeMin
+        m_Overridden: 1
+      - m_Value: 0
+        m_Name: Offset
+        m_Overridden: 1
+      - m_Value: 0
+        m_Name: RotateDegreeMax
+        m_Overridden: 1
+      - m_Value: 0
+        m_Name: RotateDegreeMin
+        m_Overridden: 1
+      - m_Value: 0
+        m_Name: SizeMax
+        m_Overridden: 1
+      - m_Value: 0
+        m_Name: SizeMin
+        m_Overridden: 1
+      - m_Value: 0
+        m_Name: Width
+        m_Overridden: 1
     m_Vector2f:
       m_Array: []
     m_Vector3f:
@@ -103,13 +152,24 @@ VisualEffect:
     m_Vector4f:
       m_Array: []
     m_Uint:
-      m_Array: []
+      m_Array:
+      - m_Value: 0
+        m_Name: Rate
+        m_Overridden: 1
     m_Int:
       m_Array: []
     m_Matrix4x4f:
       m_Array: []
     m_AnimationCurve:
-      m_Array: []
+      m_Array:
+      - m_Value:
+          serializedVersion: 2
+          m_Curve: []
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        m_Name: SizeDecayCurve
+        m_Overridden: 1
     m_Gradient:
       m_Array: []
     m_NamedObject:
@@ -130,7 +190,10 @@ VisualEffect:
         m_Name: _UVMap
         m_Overridden: 1
     m_Bool:
-      m_Array: []
+      m_Array:
+      - m_Value: 0
+        m_Name: UseTexture
+        m_Overridden: 1
 --- !u!73398921 &3405137010498294292
 VFXRenderer:
   m_ObjectHideFlags: 0

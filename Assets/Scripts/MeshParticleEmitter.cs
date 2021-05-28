@@ -14,6 +14,21 @@ public class MeshParticleEmitter : MonoBehaviour
 
     [SerializeField] private Texture2D colorTexture;
 
+    [SerializeField] private uint rate;
+    [SerializeField] private float width;
+    [SerializeField] private float alpha;
+    [SerializeField] private AnimationCurve sizeDecayCurve;
+    [SerializeField] private float sizeMin;
+    [SerializeField] private float sizeMax;
+    [SerializeField] private float lifeTimeMin;
+    [SerializeField] private float lifeTimeMax;
+    [SerializeField] private float emissionIntensity;
+    [SerializeField] private float rotateDegreeMin;
+    [SerializeField] private float rotateDegreeMax;
+    [SerializeField] private float offset;
+    [SerializeField] private bool useTexture;
+    [SerializeField] private Texture2D sparkleTexture;
+
     private Texture2D _positionMap = null;
     private Texture2D _normalMap = null;
     private Texture2D _uvMap = null;
@@ -21,9 +36,25 @@ public class MeshParticleEmitter : MonoBehaviour
     private int _targetMeshInstanceID;
     private int _colorTextureInstanceID;
 
+    private static readonly int RateID = Shader.PropertyToID("Rate");
+    private static readonly int WidthID = Shader.PropertyToID("Width");
+    private static readonly int AlphaID = Shader.PropertyToID("Alpha");
+    private static readonly int SizeDecayCurveID = Shader.PropertyToID("SizeDecayCurve");
+    private static readonly int SizeMinID = Shader.PropertyToID("SizeMin");
+    private static readonly int SizeMaxID = Shader.PropertyToID("SizeMax");
+    private static readonly int LifeTimeMinID = Shader.PropertyToID("LifeTimeMin");
+    private static readonly int LifeTimeMaxID = Shader.PropertyToID("LifeTimeMax");
+    private static readonly int EmissionIntensityID = Shader.PropertyToID("EmissionIntensity");
+    private static readonly int RotateDegreeMinID = Shader.PropertyToID("RotateDegreeMin");
+    private static readonly int RotateDegreeMaxID = Shader.PropertyToID("RotateDegreeMax");
+    private static readonly int OffsetID = Shader.PropertyToID("Offset");
+    private static readonly int UseTextureID = Shader.PropertyToID("UseTexture");
+    private static readonly int SparkleTextureID = Shader.PropertyToID("SparkleTexture");
+
     [ContextMenu("CreateMaps")]
     private void CreateMaps()
     {
+        if (targetMesh == null) return; // targetMeshが入る前にOnValidateを呼んだときにエラーを吐かないようにする処置
         _positionMap = MeshToPositionMap(targetMesh.sharedMesh);
         _normalMap = MeshToNormalMap(targetMesh.sharedMesh);
         _uvMap = MeshToUVMap(targetMesh.sharedMesh);
@@ -32,9 +63,51 @@ public class MeshParticleEmitter : MonoBehaviour
         _colorTextureInstanceID = colorTexture.GetInstanceID();
     }
 
+    private void GetInitialProperties()
+    {
+        rate = effect.GetUInt(RateID);
+        width = effect.GetFloat(WidthID);
+        alpha = effect.GetFloat(AlphaID);
+        sizeDecayCurve = effect.GetAnimationCurve(SizeDecayCurveID);
+        sizeMin = effect.GetFloat(SizeMinID);
+        sizeMax = effect.GetFloat(SizeMaxID);
+        lifeTimeMin = effect.GetFloat(LifeTimeMinID);
+        lifeTimeMax = effect.GetFloat(LifeTimeMaxID);
+        emissionIntensity = effect.GetFloat(EmissionIntensityID);
+        rotateDegreeMin = effect.GetFloat(RotateDegreeMinID);
+        rotateDegreeMax = effect.GetFloat(RotateDegreeMaxID);
+        offset = effect.GetFloat(OffsetID);
+        useTexture = effect.GetBool(UseTextureID);
+        sparkleTexture = (Texture2D) effect.GetTexture(SparkleTextureID);
+    }
+
+    private void SetProperties()
+    {
+        effect.SetTexture("_PositionMap", _positionMap);
+        effect.SetTexture("_ColorTexture", colorTexture);
+        effect.SetTexture("_NormalMap", _normalMap);
+        effect.SetTexture("_UVMap", _uvMap);
+
+        effect.SetUInt(RateID, rate);
+        effect.SetFloat(WidthID, width);
+        effect.SetFloat(AlphaID, alpha);
+        effect.SetAnimationCurve(SizeDecayCurveID, sizeDecayCurve);
+        effect.SetFloat(SizeMinID, sizeMin);
+        effect.SetFloat(SizeMaxID, sizeMax);
+        effect.SetFloat(LifeTimeMinID, lifeTimeMin);
+        effect.SetFloat(LifeTimeMaxID, lifeTimeMax);
+        effect.SetFloat(EmissionIntensityID, emissionIntensity);
+        effect.SetFloat(RotateDegreeMinID, rotateDegreeMin);
+        effect.SetFloat(RotateDegreeMaxID, rotateDegreeMax);
+        effect.SetFloat(OffsetID, offset);
+        effect.SetBool(UseTextureID, useTexture);
+        effect.SetTexture(SparkleTextureID, sparkleTexture);
+    }
+
     private void Start()
     {
         CreateMaps();
+        GetInitialProperties();
     }
 
     private void Update()
@@ -46,11 +119,7 @@ public class MeshParticleEmitter : MonoBehaviour
         }
 
         if (ResourcesHasChanged()) CreateMaps();
-
-        effect.SetTexture("_PositionMap", _positionMap);
-        effect.SetTexture("_ColorTexture", colorTexture);
-        effect.SetTexture("_NormalMap", _normalMap);
-        effect.SetTexture("_UVMap", _uvMap);
+        SetProperties();
     }
 
     private bool ResourcesHasChanged()
