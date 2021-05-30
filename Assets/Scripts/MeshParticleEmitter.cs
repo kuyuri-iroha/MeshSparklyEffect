@@ -8,26 +8,26 @@ using UnityEngine.VFX;
 [ExecuteAlways]
 public class MeshParticleEmitter : MonoBehaviour
 {
-    [SerializeField] private SkinnedMeshRenderer targetMesh;
+    public SkinnedMeshRenderer targetMesh;
 
-    [SerializeField] private VisualEffect effect;
+    public VisualEffect effect;
 
-    [SerializeField] private Texture2D colorTexture;
+    public Texture2D colorTexture;
 
-    [SerializeField] private uint rate;
-    [SerializeField] private float width;
-    [SerializeField] private float alpha;
-    [SerializeField] private AnimationCurve sizeDecayCurve;
-    [SerializeField] private float sizeMin;
-    [SerializeField] private float sizeMax;
-    [SerializeField] private float lifeTimeMin;
-    [SerializeField] private float lifeTimeMax;
-    [SerializeField] private float emissionIntensity;
-    [SerializeField] private float rotateDegreeMin;
-    [SerializeField] private float rotateDegreeMax;
-    [SerializeField] private float offset;
-    [SerializeField] private bool useTexture;
-    [SerializeField] private Texture2D sparkleTexture;
+    public uint rate;
+    public float width;
+    public float alpha;
+    public AnimationCurve sizeDecayCurve;
+    public float sizeMin;
+    public float sizeMax;
+    public float lifeTimeMin;
+    public float lifeTimeMax;
+    public float emissionIntensity;
+    public float rotateDegreeMin;
+    public float rotateDegreeMax;
+    public float offset;
+    public bool useTexture;
+    public Texture2D sparkleTexture;
 
     private Texture2D _positionMap = null;
     private Texture2D _normalMap = null;
@@ -112,12 +112,6 @@ public class MeshParticleEmitter : MonoBehaviour
 
     private void Update()
     {
-        if (!targetMesh || !effect)
-        {
-            Debug.LogError("いずれかのSerializeFieldがセットされていません。");
-            return;
-        }
-
         if (ResourcesHasChanged()) CreateMaps();
         SetProperties();
     }

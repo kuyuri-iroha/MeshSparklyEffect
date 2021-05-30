@@ -11,6 +11,8 @@
     "com.unity.textmeshpro": "3.0.6",
     "com.unity.timeline": "1.4.8",
     "com.unity.ugui": "1.0.0",
+    "com.unity.ui": "1.0.0-preview.14",
+    "com.unity.ui.builder": "1.0.0-preview.14",
     "com.unity.universaltoonshader.urp": "https://github.com/unity3d-jp/UnityChanToonShaderVer2_Project.git#release/urp/2.2.3",
     "com.unity.visualeffectgraph": "10.5.0",
     "com.unity.modules.ai": "1.0.0",
