@@ -1,5 +1,3 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -9,6 +7,8 @@ using UnityEngine.VFX;
 public class MeshParticleEmitter : MonoBehaviour
 {
     public SkinnedMeshRenderer targetMesh;
+    public MeshFilter targetMeshFilter;
+    public bool useMeshFilter;
 
     public Texture2D colorTexture;
 
@@ -34,6 +34,7 @@ public class MeshParticleEmitter : MonoBehaviour
     private Texture2D _uvMap = null;
 
     private int _targetMeshInstanceID;
+    private int _targetMeshFilterInstanceID;
     private bool _mapsCreated = false;
 
     private static readonly int RateID = Shader.PropertyToID("Rate");
@@ -51,23 +52,34 @@ public class MeshParticleEmitter : MonoBehaviour
     private static readonly int UseTextureID = Shader.PropertyToID("UseTexture");
     private static readonly int SparkleTextureID = Shader.PropertyToID("SparkleTexture");
 
-    private void CreateMaps()
+    private Mesh GetMesh()
     {
-        _positionMap = MeshToPositionMap(targetMesh.sharedMesh);
-        _normalMap = MeshToNormalMap(targetMesh.sharedMesh);
-        _uvMap = MeshToUVMap(targetMesh.sharedMesh);
+        return useMeshFilter ? targetMeshFilter.sharedMesh : targetMesh.sharedMesh;
+    }
+
+    public void CreateMaps()
+    {
+        _positionMap = MeshToPositionMap(GetMesh());
+        _normalMap = MeshToNormalMap(GetMesh());
+        _uvMap = MeshToUVMap(GetMesh());
 
         _targetMeshInstanceID = targetMesh.GetInstanceID();
+        _targetMeshFilterInstanceID = targetMeshFilter.GetInstanceID();
         _mapsCreated = true;
     }
 
     private void AddVFX()
     {
-        if (_effect != null) return;
+        var visualEffect = transform.GetComponentInChildren<VisualEffect>();
+        if (visualEffect != null)
+        {
+            _effect = visualEffect;
+            return;
+        }
 
         var vfx = Resources.Load<VisualEffectAsset>($"Sparkle");
         var vfxGameObject = new GameObject("VFX");
-        var visualEffect = vfxGameObject.AddComponent<VisualEffect>();
+        visualEffect = vfxGameObject.AddComponent<VisualEffect>();
         visualEffect.visualEffectAsset = vfx;
         _effect = visualEffect;
 
@@ -137,7 +149,8 @@ public class MeshParticleEmitter : MonoBehaviour
 
     private bool ResourcesHasChanged()
     {
-        return targetMesh != null && _targetMeshInstanceID != targetMesh.GetInstanceID();
+        return targetMesh != null && _targetMeshInstanceID != targetMesh.GetInstanceID() ||
+               targetMeshFilter != null && _targetMeshFilterInstanceID != targetMeshFilter.GetInstanceID();
     }
 
     private Texture2D MeshToUVMap(Mesh mesh)

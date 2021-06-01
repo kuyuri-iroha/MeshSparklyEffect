@@ -17,6 +17,9 @@ public class MeshParticleEmitterInspector : Editor
     private const string ModeButtonTextOnProceduralMode = "Switch Texture Mode";
     private const string ModeButtonTextOnTextureMode = "Switch Procedural Mode";
 
+    private const string ModeButtonTextOnMeshFilterMode = "Switch SkinnedMeshRenderer Mode";
+    private const string ModeButtonTextOnSkinnedMeshRendererMode = "Switch MeshFilter Mode";
+
     private const float Margin = 10.0f;
 
     private VisualElement _root;
@@ -36,6 +39,8 @@ public class MeshParticleEmitterInspector : Editor
         _errorMessageBox.style.marginTop = Margin;
         _errorMessageBox.style.marginBottom = Margin;
 
+        var meshParameters = CreateMeshParametersUI();
+
         _parametersRoot = new VisualElement();
         _sharedParameters = CreateSharedParametersUI();
         _modeSwitchButton = new Button(OnClickedModeButton) {text = ModeButtonTextOnProceduralMode};
@@ -50,35 +55,86 @@ public class MeshParticleEmitterInspector : Editor
         _parametersRoot.Add(_proceduralModeParameter);
         _parametersRoot.Add(_textureModeParameter);
 
-        var targetMeshProp = new PropertyField(serializedObject.FindProperty("targetMesh"), "Target Mesh");
+        _root.Add(meshParameters);
+        _root.Add(_parametersRoot);
+
+        return _root;
+    }
+
+    private VisualElement CreateMeshParametersUI()
+    {
+        var meshParameters = new VisualElement();
+
+        var targetMeshProp =
+            new PropertyField(serializedObject.FindProperty("targetMesh"), "Target SkinnedMeshRenderer");
         targetMeshProp.RegisterValueChangeCallback(OnChangedTargetMesh);
         targetMeshProp.style.marginTop = new StyleLength(Margin);
         targetMeshProp.style.marginBottom = new StyleLength(Margin);
 
-        _root.Add(targetMeshProp);
-        _root.Add(_parametersRoot);
+        var targetMeshFilterProp =
+            new PropertyField(serializedObject.FindProperty("targetMeshFilter"), "Target MeshFilter");
+        targetMeshFilterProp.RegisterValueChangeCallback(OnChangedTargetMesh);
+        targetMeshFilterProp.style.marginTop = new StyleLength(Margin);
+        targetMeshFilterProp.style.marginBottom = new StyleLength(Margin);
+        targetMeshFilterProp.style.display = DisplayStyle.None;
 
-        return _root;
+        var modeButton = new Button {text = ModeButtonTextOnSkinnedMeshRendererMode};
+        modeButton.RegisterCallback<ClickEvent>(_ =>
+        {
+            var meshParticleEmitter = target as MeshParticleEmitter;
+
+            if (modeButton.text.Equals(ModeButtonTextOnSkinnedMeshRendererMode))
+            {
+                meshParticleEmitter.useMeshFilter = true;
+                OnChangedTargetMesh(null);
+                targetMeshProp.style.display = DisplayStyle.None;
+                targetMeshFilterProp.style.display = DisplayStyle.Flex;
+                modeButton.text = ModeButtonTextOnMeshFilterMode;
+            }
+            else
+            {
+                meshParticleEmitter.useMeshFilter = false;
+                OnChangedTargetMesh(null);
+                targetMeshProp.style.display = DisplayStyle.Flex;
+                targetMeshFilterProp.style.display = DisplayStyle.None;
+                modeButton.text = ModeButtonTextOnSkinnedMeshRendererMode;
+            }
+        });
+
+        meshParameters.Add(modeButton);
+        meshParameters.Add(targetMeshProp);
+        meshParameters.Add(targetMeshFilterProp);
+
+        return meshParameters;
     }
 
     private void OnChangedTargetMesh(SerializedPropertyChangeEvent changeEvent)
     {
         RemoveWhenContains(_root, _errorMessageBox);
 
-        if (!VerifySkinnedMeshRenderer((target as MeshParticleEmitter).targetMesh, out var message))
+        var meshParticleEmitter = target as MeshParticleEmitter;
+
+        var message = "";
+        var ableToRun = meshParticleEmitter.useMeshFilter
+            ? VerifyMeshFilterRenderer(meshParticleEmitter.targetMeshFilter, out message)
+            : VerifySkinnedMeshRenderer(meshParticleEmitter.targetMesh, out message);
+
+        if (ableToRun)
+        {
+            _parametersRoot.style.display = DisplayStyle.Flex;
+
+            meshParticleEmitter.enabled = true;
+
+            meshParticleEmitter.CreateMaps();
+        }
+        else
         {
             _parametersRoot.style.display = DisplayStyle.None;
 
             _errorMessageBox.text = message;
             _root.Insert(0, _errorMessageBox);
 
-            (target as MeshParticleEmitter).enabled = false;
-        }
-        else
-        {
-            _parametersRoot.style.display = DisplayStyle.Flex;
-
-            (target as MeshParticleEmitter).enabled = true;
+            meshParticleEmitter.enabled = false;
         }
     }
 
@@ -99,6 +155,39 @@ public class MeshParticleEmitterInspector : Editor
             }
 
             var readTest = renderer.sharedMesh.vertices;
+            if (readTest == null)
+            {
+                errorMessage = $"The vertices of Mesh in SkinnedMeshRenderer {NullReferenceErrorMessage}";
+            }
+
+            errorMessage = "";
+        }
+        catch (Exception e)
+        {
+            errorMessage = $"{UnknownErrorMessage} {e.Message}";
+            return false;
+        }
+
+        return true;
+    }
+
+    private static bool VerifyMeshFilterRenderer(MeshFilter meshFilter, out string errorMessage)
+    {
+        try
+        {
+            if (meshFilter == null)
+            {
+                errorMessage = $"The MeshFilter {NullReferenceErrorMessage}";
+                return false;
+            }
+
+            if (meshFilter.sharedMesh.isReadable == false)
+            {
+                errorMessage = $"The Mesh in MeshFilter {NotReadableErrorMessage}";
+                return false;
+            }
+
+            var readTest = meshFilter.sharedMesh.vertices;
             if (readTest == null)
             {
                 errorMessage = $"The vertices of Mesh in SkinnedMeshRenderer {NullReferenceErrorMessage}";
