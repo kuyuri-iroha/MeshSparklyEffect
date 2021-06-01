@@ -18,6 +18,8 @@ public class MeshParticleEmitterInspector : Editor
     private const string ModeButtonTextOnProceduralMode = "Switch Texture Mode";
     private const string ModeButtonTextOnTextureMode = "Switch Procedural Mode";
 
+    private const float Margin = 10.0f;
+
     private VisualElement _root;
     private HelpBox _errorMessageBox;
     private VisualElement _parametersRoot;
@@ -36,6 +38,8 @@ public class MeshParticleEmitterInspector : Editor
         _parametersRoot = new VisualElement();
         _sharedParameters = CreateSharedParametersUI();
         _modeSwitchButton = new Button(OnClickedModeButton) {text = ModeButtonTextOnProceduralMode};
+        _modeSwitchButton.style.marginTop = Margin;
+        _modeSwitchButton.style.marginBottom = Margin;
         _proceduralModeParameter = CreateProceduralModeUI();
         _textureModeParameter = CreateTextureModeUI();
         _textureModeParameter.style.display = DisplayStyle.None;
@@ -47,28 +51,11 @@ public class MeshParticleEmitterInspector : Editor
 
         var targetMeshProp = new PropertyField(serializedObject.FindProperty("targetMesh"), "Target Mesh");
         targetMeshProp.RegisterValueChangeCallback(OnChangedTargetMesh);
+        targetMeshProp.style.marginTop = new StyleLength(Margin);
+        targetMeshProp.style.marginBottom = new StyleLength(Margin);
 
         _root.Add(targetMeshProp);
         _root.Add(_parametersRoot);
-
-        /*
-
-        // VisualElements objects can contain other VisualElement following a tree hierarchy.
-        VisualElement label = new Label("Hello World! From C#");
-        root.Add(label);
-
-        // Import UXML
-        var visualTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Editor/MeshParticleEmitterEditor.uxml");
-        VisualElement labelFromUXML = visualTree.Instantiate();
-        root.Add(labelFromUXML);
-
-        // A stylesheet can be added to a VisualElement.
-        // The style will be applied to the VisualElement and all of its children.
-        var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/Editor/MeshParticleEmitterEditor.uss");
-        VisualElement labelWithStyle = new Label("Hello World! With Style");
-        labelWithStyle.styleSheets.Add(styleSheet);
-        root.Add(labelWithStyle);
-        */
 
         return _root;
     }
@@ -125,6 +112,8 @@ public class MeshParticleEmitterInspector : Editor
 
     private VisualElement CreateSharedParametersUI()
     {
+        var meshParticleEmitter = target as MeshParticleEmitter;
+
         var sharedParameters = new VisualElement();
 
         var rateProp = new PropertyField(serializedObject.FindProperty("rate"), "Rate");
@@ -132,8 +121,27 @@ public class MeshParticleEmitterInspector : Editor
         var sizeDecayCurveProp = new PropertyField(serializedObject.FindProperty("sizeDecayCurve"), "Size Decay Curve");
         var sizeMinProp = new PropertyField(serializedObject.FindProperty("sizeMin"), "Size Min");
         var sizeMaxProp = new PropertyField(serializedObject.FindProperty("sizeMax"), "Size Max");
+        sizeMinProp.RegisterValueChangeCallback(_ =>
+        {
+            meshParticleEmitter.sizeMin =
+                Mathf.Clamp(meshParticleEmitter.sizeMin, 0.0f, meshParticleEmitter.sizeMax);
+        });
+        sizeMaxProp.RegisterValueChangeCallback(_ =>
+        {
+            meshParticleEmitter.sizeMax = Mathf.Max(meshParticleEmitter.sizeMax, meshParticleEmitter.sizeMin);
+        });
         var lifeTimeMinProp = new PropertyField(serializedObject.FindProperty("lifeTimeMin"), "Life Time Min");
         var lifeTimeMaxProp = new PropertyField(serializedObject.FindProperty("lifeTimeMax"), "Life Time Max");
+        lifeTimeMinProp.RegisterValueChangeCallback(_ =>
+        {
+            meshParticleEmitter.lifeTimeMin =
+                Mathf.Clamp(meshParticleEmitter.lifeTimeMin, 0.0f, meshParticleEmitter.lifeTimeMax);
+        });
+        lifeTimeMaxProp.RegisterValueChangeCallback(_ =>
+        {
+            meshParticleEmitter.lifeTimeMax =
+                Mathf.Max(meshParticleEmitter.lifeTimeMax, meshParticleEmitter.lifeTimeMin);
+        });
         var emissionIntensityProp =
             new PropertyField(serializedObject.FindProperty("emissionIntensity"), "Emission Intensity");
         var rotateDegreeMinProp =
@@ -154,6 +162,9 @@ public class MeshParticleEmitterInspector : Editor
         sharedParameters.Add(rotateDegreeMaxProp);
         sharedParameters.Add(offsetProp);
 
+        sharedParameters.style.marginTop = Margin;
+        sharedParameters.style.marginBottom = Margin;
+
         return sharedParameters;
     }
 
@@ -165,6 +176,8 @@ public class MeshParticleEmitterInspector : Editor
 
         textureModeParameters.Add(sparkleTextureProp);
 
+        textureModeParameters.style.marginTop = Margin * 0.5f;
+
         return textureModeParameters;
     }
 
@@ -175,6 +188,8 @@ public class MeshParticleEmitterInspector : Editor
         var widthProp = new PropertyField(serializedObject.FindProperty("width"), "Spike Width");
 
         proceduralModeParameters.Add(widthProp);
+
+        proceduralModeParameters.style.marginTop = Margin * 0.5f;
 
         return proceduralModeParameters;
     }
