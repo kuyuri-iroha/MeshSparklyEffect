@@ -1,0 +1,22 @@
+{
+  "name": "com.kuyuri.meshparticleemitter",
+  "displayName": "MeshParticleEmitter - Kuyuri",
+  "version": "0.1.0",
+  "unity": "2020.3",
+  "description": "Particle assets that fire according to the mesh.",
+  "dependencies": {
+    "com.unity.visualeffectgraph": "10.5.0",
+    "com.unity.render-pipelines.universal": "10.5.0"
+  },
+  "keywords": [
+    "vfx",
+    "dynamic point cache"
+  ],
+  "author": {
+    "name": "Kuyuri Iroha",
+    "email": "kuyuri.iroha@gmail.com",
+    "url": "https://kuyuri-iroha.com"
+  },
+  "license": "UNLICENSED",
+  "private": true
+}
