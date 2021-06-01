@@ -1,0 +1,16 @@
+{
+    "name": "Unity.com.kuyuri.meshparticleemitter.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:8361b1a846caa3b4c917cff90238ab5f"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
