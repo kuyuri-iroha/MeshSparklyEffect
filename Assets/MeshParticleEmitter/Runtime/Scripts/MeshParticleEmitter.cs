@@ -14,7 +14,7 @@ public class MeshParticleEmitter : MonoBehaviour
 
     public uint rate;
     [Range(0.0f, 1.0f)] public float width;
-    public float alpha;
+    [Range(0.0f, 1.0f)] public float alpha;
     public AnimationCurve sizeDecayCurve;
     public float sizeMin;
     public float sizeMax;
