@@ -32,6 +32,8 @@ public class MeshParticleEmitterInspector : Editor
 
     public override VisualElement CreateInspectorGUI()
     {
+        var meshParticleEmitter = target as MeshParticleEmitter;
+
         _root = new VisualElement();
         _root.Bind(serializedObject);
 
@@ -43,12 +45,14 @@ public class MeshParticleEmitterInspector : Editor
 
         _parametersRoot = new VisualElement();
         _sharedParameters = CreateSharedParametersUI();
-        _modeSwitchButton = new Button(OnClickedModeButton) {text = ModeButtonTextOnProceduralMode};
+        _modeSwitchButton = new Button(OnClickedModeButton)
+            {text = meshParticleEmitter.useTexture ? ModeButtonTextOnTextureMode : ModeButtonTextOnProceduralMode};
         _modeSwitchButton.style.marginTop = Margin;
         _modeSwitchButton.style.marginBottom = Margin;
         _proceduralModeParameter = CreateProceduralModeUI();
+        _proceduralModeParameter.style.display = meshParticleEmitter.useTexture ? DisplayStyle.None : DisplayStyle.Flex;
         _textureModeParameter = CreateTextureModeUI();
-        _textureModeParameter.style.display = DisplayStyle.None;
+        _textureModeParameter.style.display = meshParticleEmitter.useTexture ? DisplayStyle.Flex : DisplayStyle.None;
 
         _parametersRoot.Add(_sharedParameters);
         _parametersRoot.Add(_modeSwitchButton);
@@ -63,6 +67,8 @@ public class MeshParticleEmitterInspector : Editor
 
     private VisualElement CreateMeshParametersUI()
     {
+        var meshParticleEmitter = target as MeshParticleEmitter;
+
         var meshParameters = new VisualElement();
 
         var targetMeshProp =
@@ -70,19 +76,23 @@ public class MeshParticleEmitterInspector : Editor
         targetMeshProp.RegisterValueChangeCallback(OnChangedTargetMesh);
         targetMeshProp.style.marginTop = new StyleLength(Margin);
         targetMeshProp.style.marginBottom = new StyleLength(Margin);
+        targetMeshProp.style.display = meshParticleEmitter.useMeshFilter ? DisplayStyle.None : DisplayStyle.Flex;
 
         var targetMeshFilterProp =
             new PropertyField(serializedObject.FindProperty("targetMeshFilter"), "Target MeshFilter");
         targetMeshFilterProp.RegisterValueChangeCallback(OnChangedTargetMesh);
         targetMeshFilterProp.style.marginTop = new StyleLength(Margin);
         targetMeshFilterProp.style.marginBottom = new StyleLength(Margin);
-        targetMeshFilterProp.style.display = DisplayStyle.None;
+        targetMeshFilterProp.style.display = meshParticleEmitter.useMeshFilter ? DisplayStyle.Flex : DisplayStyle.None;
 
-        var modeButton = new Button {text = ModeButtonTextOnSkinnedMeshRendererMode};
+        var modeButton = new Button
+        {
+            text = meshParticleEmitter.useMeshFilter
+                ? ModeButtonTextOnMeshFilterMode
+                : ModeButtonTextOnSkinnedMeshRendererMode
+        };
         modeButton.RegisterCallback<ClickEvent>(_ =>
         {
-            var meshParticleEmitter = target as MeshParticleEmitter;
-
             if (modeButton.text.Equals(ModeButtonTextOnSkinnedMeshRendererMode))
             {
                 meshParticleEmitter.useMeshFilter = true;
