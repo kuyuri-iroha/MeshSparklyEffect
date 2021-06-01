@@ -10,8 +10,6 @@ public class MeshParticleEmitter : MonoBehaviour
 {
     public SkinnedMeshRenderer targetMesh;
 
-    public VisualEffect effect;
-
     public Texture2D colorTexture;
 
     public uint rate;
@@ -29,12 +27,14 @@ public class MeshParticleEmitter : MonoBehaviour
     public bool useTexture;
     public Texture2D sparkleTexture;
 
+    private VisualEffect _effect;
+
     private Texture2D _positionMap = null;
     private Texture2D _normalMap = null;
     private Texture2D _uvMap = null;
 
     private int _targetMeshInstanceID;
-    private int _colorTextureInstanceID;
+    private bool _mapsCreated = false;
 
     private static readonly int RateID = Shader.PropertyToID("Rate");
     private static readonly int WidthID = Shader.PropertyToID("Width");
@@ -51,75 +51,93 @@ public class MeshParticleEmitter : MonoBehaviour
     private static readonly int UseTextureID = Shader.PropertyToID("UseTexture");
     private static readonly int SparkleTextureID = Shader.PropertyToID("SparkleTexture");
 
-    [ContextMenu("CreateMaps")]
     private void CreateMaps()
     {
-        if (targetMesh == null) return; // targetMeshが入る前にOnValidateを呼んだときにエラーを吐かないようにする処置
         _positionMap = MeshToPositionMap(targetMesh.sharedMesh);
         _normalMap = MeshToNormalMap(targetMesh.sharedMesh);
         _uvMap = MeshToUVMap(targetMesh.sharedMesh);
 
         _targetMeshInstanceID = targetMesh.GetInstanceID();
-        _colorTextureInstanceID = colorTexture.GetInstanceID();
+        _mapsCreated = true;
+    }
+
+    private void AddVFX()
+    {
+        if (_effect != null) return;
+
+        var vfx = Resources.Load<VisualEffectAsset>($"Sparkle");
+        var vfxGameObject = new GameObject("VFX");
+        var visualEffect = vfxGameObject.AddComponent<VisualEffect>();
+        visualEffect.visualEffectAsset = vfx;
+        _effect = visualEffect;
+
+        vfxGameObject.transform.SetParent(transform);
+        vfxGameObject.transform.localPosition = Vector3.zero;
+        vfxGameObject.transform.localRotation = Quaternion.identity;
+        vfxGameObject.transform.localScale = Vector3.one;
     }
 
     private void GetInitialProperties()
     {
-        rate = effect.GetUInt(RateID);
-        width = effect.GetFloat(WidthID);
-        alpha = effect.GetFloat(AlphaID);
-        sizeDecayCurve = effect.GetAnimationCurve(SizeDecayCurveID);
-        sizeMin = effect.GetFloat(SizeMinID);
-        sizeMax = effect.GetFloat(SizeMaxID);
-        lifeTimeMin = effect.GetFloat(LifeTimeMinID);
-        lifeTimeMax = effect.GetFloat(LifeTimeMaxID);
-        emissionIntensity = effect.GetFloat(EmissionIntensityID);
-        rotateDegreeMin = effect.GetFloat(RotateDegreeMinID);
-        rotateDegreeMax = effect.GetFloat(RotateDegreeMaxID);
-        offset = effect.GetFloat(OffsetID);
-        useTexture = effect.GetBool(UseTextureID);
-        sparkleTexture = (Texture2D) effect.GetTexture(SparkleTextureID);
+        rate = _effect.GetUInt(RateID);
+        width = _effect.GetFloat(WidthID);
+        alpha = _effect.GetFloat(AlphaID);
+        sizeDecayCurve = _effect.GetAnimationCurve(SizeDecayCurveID);
+        sizeMin = _effect.GetFloat(SizeMinID);
+        sizeMax = _effect.GetFloat(SizeMaxID);
+        lifeTimeMin = _effect.GetFloat(LifeTimeMinID);
+        lifeTimeMax = _effect.GetFloat(LifeTimeMaxID);
+        emissionIntensity = _effect.GetFloat(EmissionIntensityID);
+        rotateDegreeMin = _effect.GetFloat(RotateDegreeMinID);
+        rotateDegreeMax = _effect.GetFloat(RotateDegreeMaxID);
+        offset = _effect.GetFloat(OffsetID);
+        useTexture = _effect.GetBool(UseTextureID);
+        sparkleTexture = (Texture2D) _effect.GetTexture(SparkleTextureID);
     }
 
     private void SetProperties()
     {
-        effect.SetTexture("_PositionMap", _positionMap);
-        effect.SetTexture("_ColorTexture", colorTexture);
-        effect.SetTexture("_NormalMap", _normalMap);
-        effect.SetTexture("_UVMap", _uvMap);
+        if (_mapsCreated)
+        {
+            _effect.SetTexture("_PositionMap", _positionMap);
+            if (colorTexture != null) _effect.SetTexture("_ColorTexture", colorTexture);
+            _effect.SetTexture("_NormalMap", _normalMap);
+            _effect.SetTexture("_UVMap", _uvMap);
+        }
 
-        effect.SetUInt(RateID, rate);
-        effect.SetFloat(WidthID, width);
-        effect.SetFloat(AlphaID, alpha);
-        effect.SetAnimationCurve(SizeDecayCurveID, sizeDecayCurve);
-        effect.SetFloat(SizeMinID, sizeMin);
-        effect.SetFloat(SizeMaxID, sizeMax);
-        effect.SetFloat(LifeTimeMinID, lifeTimeMin);
-        effect.SetFloat(LifeTimeMaxID, lifeTimeMax);
-        effect.SetFloat(EmissionIntensityID, emissionIntensity);
-        effect.SetFloat(RotateDegreeMinID, rotateDegreeMin);
-        effect.SetFloat(RotateDegreeMaxID, rotateDegreeMax);
-        effect.SetFloat(OffsetID, offset);
-        effect.SetBool(UseTextureID, useTexture);
-        effect.SetTexture(SparkleTextureID, sparkleTexture);
+        _effect.SetUInt(RateID, rate);
+        _effect.SetFloat(WidthID, width);
+        _effect.SetFloat(AlphaID, alpha);
+        _effect.SetAnimationCurve(SizeDecayCurveID, sizeDecayCurve);
+        _effect.SetFloat(SizeMinID, sizeMin);
+        _effect.SetFloat(SizeMaxID, sizeMax);
+        _effect.SetFloat(LifeTimeMinID, lifeTimeMin);
+        _effect.SetFloat(LifeTimeMaxID, lifeTimeMax);
+        _effect.SetFloat(EmissionIntensityID, emissionIntensity);
+        _effect.SetFloat(RotateDegreeMinID, rotateDegreeMin);
+        _effect.SetFloat(RotateDegreeMaxID, rotateDegreeMax);
+        _effect.SetFloat(OffsetID, offset);
+        _effect.SetBool(UseTextureID, useTexture);
+        _effect.SetTexture(SparkleTextureID, sparkleTexture);
     }
 
     private void Start()
     {
-        CreateMaps();
+        AddVFX();
         GetInitialProperties();
     }
 
     private void Update()
     {
+        if (_effect == null) return;
+
         if (ResourcesHasChanged()) CreateMaps();
         SetProperties();
     }
 
     private bool ResourcesHasChanged()
     {
-        return _targetMeshInstanceID != targetMesh.GetInstanceID() ||
-               _colorTextureInstanceID != colorTexture.GetInstanceID();
+        return targetMesh != null && _targetMeshInstanceID != targetMesh.GetInstanceID();
     }
 
     private Texture2D MeshToUVMap(Mesh mesh)

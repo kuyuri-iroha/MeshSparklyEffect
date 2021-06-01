@@ -4395,7 +4395,7 @@ MonoBehaviour:
   - {fileID: 8926484042661614866}
   m_ExposedName: Alpha
   m_Exposed: 1
-  m_Order: 7
+  m_Order: 6
   m_Category: 
   m_Min:
     m_Type:
@@ -4475,7 +4475,7 @@ MonoBehaviour:
   - {fileID: 8926484042661614871}
   m_ExposedName: SizeDecayCurve
   m_Exposed: 1
-  m_Order: 8
+  m_Order: 7
   m_Category: 
   m_Min:
     m_Type:
@@ -4555,7 +4555,7 @@ MonoBehaviour:
   - {fileID: 8926484042661614879}
   m_ExposedName: SizeMin
   m_Exposed: 1
-  m_Order: 9
+  m_Order: 8
   m_Category: 
   m_Min:
     m_Type:
@@ -4715,7 +4715,7 @@ MonoBehaviour:
   - {fileID: 8926484042661614892}
   m_ExposedName: LifeTimeMin
   m_Exposed: 1
-  m_Order: 11
+  m_Order: 10
   m_Category: 
   m_Min:
     m_Type:
@@ -4795,7 +4795,7 @@ MonoBehaviour:
   - {fileID: 8926484042661614897}
   m_ExposedName: LifeTimeMax
   m_Exposed: 1
-  m_Order: 12
+  m_Order: 11
   m_Category: 
   m_Min:
     m_Type:
@@ -4910,7 +4910,7 @@ MonoBehaviour:
   - {fileID: 8926484042661614901}
   m_ExposedName: EmissionIntensity
   m_Exposed: 1
-  m_Order: 13
+  m_Order: 12
   m_Category: 
   m_Min:
     m_Type:
@@ -5088,7 +5088,7 @@ MonoBehaviour:
   - {fileID: 8926484042661614909}
   m_ExposedName: SizeMax
   m_Exposed: 1
-  m_Order: 10
+  m_Order: 9
   m_Category: 
   m_Min:
     m_Type:
@@ -5298,7 +5298,7 @@ MonoBehaviour:
   - {fileID: 8926484042661614916}
   m_ExposedName: RotateDegreeMin
   m_Exposed: 1
-  m_Order: 14
+  m_Order: 13
   m_Category: 
   m_Min:
     m_Type:
@@ -5378,7 +5378,7 @@ MonoBehaviour:
   - {fileID: 8926484042661614918}
   m_ExposedName: RotateDegreeMax
   m_Exposed: 1
-  m_Order: 15
+  m_Order: 14
   m_Category: 
   m_Min:
     m_Type:
@@ -5458,7 +5458,7 @@ MonoBehaviour:
   - {fileID: 8926484042661614920}
   m_ExposedName: Offset
   m_Exposed: 1
-  m_Order: 16
+  m_Order: 15
   m_Category: 
   m_Min:
     m_Type:
@@ -6215,7 +6215,7 @@ MonoBehaviour:
   - {fileID: 8926484042661614944}
   m_ExposedName: UseTexture
   m_Exposed: 1
-  m_Order: 17
+  m_Order: 16
   m_Category: 
   m_Min:
     m_Type:
@@ -6295,7 +6295,7 @@ MonoBehaviour:
   - {fileID: 8926484042661614946}
   m_ExposedName: SparkleTexture
   m_Exposed: 1
-  m_Order: 18
+  m_Order: 17
   m_Category: 
   m_Min:
     m_Type:

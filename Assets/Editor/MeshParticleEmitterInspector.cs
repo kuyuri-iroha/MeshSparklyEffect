@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 
-
 [CustomEditor(typeof(MeshParticleEmitter))]
 public class MeshParticleEmitterInspector : Editor
 {
@@ -34,6 +33,8 @@ public class MeshParticleEmitterInspector : Editor
         _root.Bind(serializedObject);
 
         _errorMessageBox = new HelpBox("", HelpBoxMessageType.Error);
+        _errorMessageBox.style.marginTop = Margin;
+        _errorMessageBox.style.marginBottom = Margin;
 
         _parametersRoot = new VisualElement();
         _sharedParameters = CreateSharedParametersUI();
@@ -70,10 +71,14 @@ public class MeshParticleEmitterInspector : Editor
 
             _errorMessageBox.text = message;
             _root.Insert(0, _errorMessageBox);
+
+            (target as MeshParticleEmitter).enabled = false;
         }
         else
         {
             _parametersRoot.style.display = DisplayStyle.Flex;
+
+            (target as MeshParticleEmitter).enabled = true;
         }
     }
 
@@ -116,6 +121,7 @@ public class MeshParticleEmitterInspector : Editor
 
         var sharedParameters = new VisualElement();
 
+        var colorTextureProp = new PropertyField(serializedObject.FindProperty("colorTexture"), "Color Texture");
         var rateProp = new PropertyField(serializedObject.FindProperty("rate"), "Rate");
         var alphaProp = new PropertyField(serializedObject.FindProperty("alpha"), "Alpha");
         var sizeDecayCurveProp = new PropertyField(serializedObject.FindProperty("sizeDecayCurve"), "Size Decay Curve");
@@ -150,6 +156,7 @@ public class MeshParticleEmitterInspector : Editor
             new PropertyField(serializedObject.FindProperty("rotateDegreeMax"), "Rotate Degree Max");
         var offsetProp = new PropertyField(serializedObject.FindProperty("offset"), "Offset");
 
+        sharedParameters.Add(colorTextureProp);
         sharedParameters.Add(rateProp);
         sharedParameters.Add(alphaProp);
         sharedParameters.Add(sizeDecayCurveProp);
