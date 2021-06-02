@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.VFX;
 
 [ExecuteAlways]
-public class MeshParticleEmitter : MonoBehaviour
+public class MeshSparklyEffect : MonoBehaviour
 {
     public SkinnedMeshRenderer targetMesh;
     public MeshFilter targetMeshFilter;

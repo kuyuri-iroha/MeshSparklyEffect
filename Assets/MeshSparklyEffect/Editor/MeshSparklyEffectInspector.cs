@@ -4,8 +4,8 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 
-[CustomEditor(typeof(MeshParticleEmitter))]
-public class MeshParticleEmitterInspector : Editor
+[CustomEditor(typeof(MeshSparklyEffect))]
+public class MeshSparklyEffectInspector : Editor
 {
     private const string NullReferenceErrorMessage = " is missing.";
 
@@ -32,7 +32,7 @@ public class MeshParticleEmitterInspector : Editor
 
     public override VisualElement CreateInspectorGUI()
     {
-        var meshParticleEmitter = target as MeshParticleEmitter;
+        var meshParticleEmitter = target as MeshSparklyEffect;
 
         _root = new VisualElement();
         _root.Bind(serializedObject);
@@ -67,7 +67,7 @@ public class MeshParticleEmitterInspector : Editor
 
     private VisualElement CreateMeshParametersUI()
     {
-        var meshParticleEmitter = target as MeshParticleEmitter;
+        var meshParticleEmitter = target as MeshSparklyEffect;
 
         var meshParameters = new VisualElement();
 
@@ -122,7 +122,7 @@ public class MeshParticleEmitterInspector : Editor
     {
         RemoveWhenContains(_root, _errorMessageBox);
 
-        var meshParticleEmitter = target as MeshParticleEmitter;
+        var meshParticleEmitter = target as MeshSparklyEffect;
 
         var message = "";
         var ableToRun = meshParticleEmitter.useMeshFilter
@@ -216,7 +216,7 @@ public class MeshParticleEmitterInspector : Editor
 
     private VisualElement CreateSharedParametersUI()
     {
-        var meshParticleEmitter = target as MeshParticleEmitter;
+        var meshParticleEmitter = target as MeshSparklyEffect;
 
         var sharedParameters = new VisualElement();
 
@@ -302,7 +302,7 @@ public class MeshParticleEmitterInspector : Editor
 
     private void OnClickedModeButton()
     {
-        var meshParticleEmitter = target as MeshParticleEmitter;
+        var meshParticleEmitter = target as MeshSparklyEffect;
 
         if (_modeSwitchButton.text.Equals(ModeButtonTextOnProceduralMode))
         {
