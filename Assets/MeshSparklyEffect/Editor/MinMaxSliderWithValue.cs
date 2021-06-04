@@ -73,25 +73,41 @@ namespace UIToolkitExtensions
         public float lowLimit
         {
             get => _lowLimit.value;
-            set => _lowLimit.value = value;
+            set
+            {
+                _lowLimit.value = value;
+                _slider.lowLimit = value;
+            }
         }
 
         public float highLimit
         {
             get => _highLimit.value;
-            set => _highLimit.value = value;
+            set
+            {
+                _highLimit.value = value;
+                _slider.highLimit = value;
+            }
         }
 
         public float minValue
         {
             get => _minValue.value;
-            set => _minValue.value = value;
+            set
+            {
+                _minValue.value = value;
+                _slider.minValue = value;
+            }
         }
 
         public float maxValue
         {
             get => _maxValue.value;
-            set => _maxValue.value = value;
+            set
+            {
+                _maxValue.value = value;
+                _slider.maxValue = value;
+            }
         }
 
         private Label _title;

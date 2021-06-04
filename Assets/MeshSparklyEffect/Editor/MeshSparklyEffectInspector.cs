@@ -249,10 +249,8 @@ public class MeshSparklyEffectInspector : Editor
         });
         var emissionIntensityProp =
             new PropertyField(serializedObject.FindProperty("emissionIntensity"), "Emission Intensity");
-        var rotateDegreeMinProp =
-            new PropertyField(serializedObject.FindProperty("rotateDegreeMin"), "Rotate Degree Min");
-        var rotateDegreeMaxProp =
-            new PropertyField(serializedObject.FindProperty("rotateDegreeMax"), "Rotate Degree Max");
+        var rotateDegreeProp =
+            new PropertyField(serializedObject.FindProperty("rotateDegree"), "Rotate Degree");
         var offsetProp = new PropertyField(serializedObject.FindProperty("offset"), "Offset");
 
         sharedParameters.Add(colorTextureProp);
@@ -264,8 +262,7 @@ public class MeshSparklyEffectInspector : Editor
         sharedParameters.Add(lifeTimeMinProp);
         sharedParameters.Add(lifeTimeMaxProp);
         sharedParameters.Add(emissionIntensityProp);
-        sharedParameters.Add(rotateDegreeMinProp);
-        sharedParameters.Add(rotateDegreeMaxProp);
+        sharedParameters.Add(rotateDegreeProp);
         sharedParameters.Add(offsetProp);
 
         sharedParameters.style.marginTop = Margin;
