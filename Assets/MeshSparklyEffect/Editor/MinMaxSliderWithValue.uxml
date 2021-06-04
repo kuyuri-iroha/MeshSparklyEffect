@@ -12,7 +12,7 @@
             <uie:FloatField value="100" name="high-limit" />
         </ui:VisualElement>
     </ui:VisualElement>
-    <ui:MinMaxSlider low-limit="0" high-limit="100" min-value="0" max-value="75" name="min-max-slider" style="width: 100%; justify-content: flex-start;" />
+    <ui:MinMaxSlider low-limit="0" high-limit="100" min-value="0" max-value="75" name="min-max-slider" style="width: auto; justify-content: flex-start;" />
     <ui:VisualElement name="value-area" style="flex-direction: row; justify-content: space-between; width: 100%;">
         <ui:VisualElement name="min-value-area" style="flex-direction: row; align-items: stretch; -unity-text-align: middle-left;">
             <ui:Label text="Min" display-tooltip-when-elided="true" />
