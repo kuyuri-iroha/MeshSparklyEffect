@@ -5232,7 +5232,7 @@ MonoBehaviour:
   - {fileID: 8926484042661614920}
   m_ExposedName: Offset
   m_Exposed: 1
-  m_Order: 15
+  m_Order: 14
   m_Category: 
   m_Min:
     m_Type:
@@ -5989,7 +5989,7 @@ MonoBehaviour:
   - {fileID: 8926484042661614944}
   m_ExposedName: UseTexture
   m_Exposed: 1
-  m_Order: 16
+  m_Order: 15
   m_Category: 
   m_Min:
     m_Type:
@@ -6069,7 +6069,7 @@ MonoBehaviour:
   - {fileID: 8926484042661614946}
   m_ExposedName: SparkleTexture
   m_Exposed: 1
-  m_Order: 17
+  m_Order: 16
   m_Category: 
   m_Min:
     m_Type:

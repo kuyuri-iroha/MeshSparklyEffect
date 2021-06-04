@@ -32,93 +32,86 @@ public class MeshSparklyEffectInspector : Editor
 
     public override VisualElement CreateInspectorGUI()
     {
-        var meshParticleEmitter = target as MeshSparklyEffect;
+        var meshSparklyEffect = target as MeshSparklyEffect;
 
-        _root = new VisualElement();
+        var uxml = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(
+            "Assets/MeshSparklyEffect/Editor/MeshSparklyEffectInspector.uxml");
+        _root = uxml.CloneTree();
+        _root.name = "mesh-sparkly-effect";
         _root.Bind(serializedObject);
 
+        // Error message box
         _errorMessageBox = new HelpBox("", HelpBoxMessageType.Error);
         _errorMessageBox.style.marginTop = Margin;
         _errorMessageBox.style.marginBottom = Margin;
 
-        var meshParameters = CreateMeshParametersUI();
+        // Mesh parameters
+        var targetMeshProp = _root.Q<ObjectField>("skinned-mesh-renderer");
+        targetMeshProp.RegisterValueChangedCallback(_ => OnChangedTargetMesh());
+        targetMeshProp.style.display = meshSparklyEffect.useMeshFilter ? DisplayStyle.None : DisplayStyle.Flex;
 
-        _parametersRoot = new VisualElement();
-        _sharedParameters = CreateSharedParametersUI();
-        _modeSwitchButton = new Button(OnClickedModeButton)
-            {text = meshParticleEmitter.useTexture ? ModeButtonTextOnTextureMode : ModeButtonTextOnProceduralMode};
-        _modeSwitchButton.style.marginTop = Margin;
-        _modeSwitchButton.style.marginBottom = Margin;
-        _proceduralModeParameter = CreateProceduralModeUI();
-        _proceduralModeParameter.style.display = meshParticleEmitter.useTexture ? DisplayStyle.None : DisplayStyle.Flex;
-        _textureModeParameter = CreateTextureModeUI();
-        _textureModeParameter.style.display = meshParticleEmitter.useTexture ? DisplayStyle.Flex : DisplayStyle.None;
+        var targetMeshFilterProp = _root.Q<ObjectField>("mesh-filter");
+        targetMeshFilterProp.RegisterValueChangedCallback(_ => OnChangedTargetMesh());
+        targetMeshFilterProp.style.display = meshSparklyEffect.useMeshFilter ? DisplayStyle.Flex : DisplayStyle.None;
 
-        _parametersRoot.Add(_sharedParameters);
-        _parametersRoot.Add(_modeSwitchButton);
-        _parametersRoot.Add(_proceduralModeParameter);
-        _parametersRoot.Add(_textureModeParameter);
-
-        _root.Add(meshParameters);
-        _root.Add(_parametersRoot);
-
-        return _root;
-    }
-
-    private VisualElement CreateMeshParametersUI()
-    {
-        var meshParticleEmitter = target as MeshSparklyEffect;
-
-        var meshParameters = new VisualElement();
-
-        var targetMeshProp =
-            new PropertyField(serializedObject.FindProperty("targetMesh"), "Target SkinnedMeshRenderer");
-        targetMeshProp.RegisterValueChangeCallback(OnChangedTargetMesh);
-        targetMeshProp.style.marginTop = new StyleLength(Margin);
-        targetMeshProp.style.marginBottom = new StyleLength(Margin);
-        targetMeshProp.style.display = meshParticleEmitter.useMeshFilter ? DisplayStyle.None : DisplayStyle.Flex;
-
-        var targetMeshFilterProp =
-            new PropertyField(serializedObject.FindProperty("targetMeshFilter"), "Target MeshFilter");
-        targetMeshFilterProp.RegisterValueChangeCallback(OnChangedTargetMesh);
-        targetMeshFilterProp.style.marginTop = new StyleLength(Margin);
-        targetMeshFilterProp.style.marginBottom = new StyleLength(Margin);
-        targetMeshFilterProp.style.display = meshParticleEmitter.useMeshFilter ? DisplayStyle.Flex : DisplayStyle.None;
-
-        var modeButton = new Button
-        {
-            text = meshParticleEmitter.useMeshFilter
-                ? ModeButtonTextOnMeshFilterMode
-                : ModeButtonTextOnSkinnedMeshRendererMode
-        };
+        var modeButton = _root.Q<Button>("mesh-mode-button");
+        modeButton.text = meshSparklyEffect.useMeshFilter
+            ? ModeButtonTextOnMeshFilterMode
+            : ModeButtonTextOnSkinnedMeshRendererMode;
         modeButton.RegisterCallback<ClickEvent>(_ =>
         {
             if (modeButton.text.Equals(ModeButtonTextOnSkinnedMeshRendererMode))
             {
-                meshParticleEmitter.useMeshFilter = true;
-                OnChangedTargetMesh(null);
+                meshSparklyEffect.useMeshFilter = true;
+                OnChangedTargetMesh();
                 targetMeshProp.style.display = DisplayStyle.None;
                 targetMeshFilterProp.style.display = DisplayStyle.Flex;
                 modeButton.text = ModeButtonTextOnMeshFilterMode;
             }
             else
             {
-                meshParticleEmitter.useMeshFilter = false;
-                OnChangedTargetMesh(null);
+                meshSparklyEffect.useMeshFilter = false;
+                OnChangedTargetMesh();
                 targetMeshProp.style.display = DisplayStyle.Flex;
                 targetMeshFilterProp.style.display = DisplayStyle.None;
                 modeButton.text = ModeButtonTextOnSkinnedMeshRendererMode;
             }
         });
 
-        meshParameters.Add(modeButton);
-        meshParameters.Add(targetMeshProp);
-        meshParameters.Add(targetMeshFilterProp);
+        // Parameters root
+        _parametersRoot = _root.Q<VisualElement>("parameters-root");
+        var sizeMinMaxProp = _root.Q<UIToolkitExtensions.MinMaxSliderWithValue>("size-min-max");
+        sizeMinMaxProp.RegisterValueChangedCallback(range =>
+        {
+            meshSparklyEffect.sizeMin = range.x;
+            meshSparklyEffect.sizeMax = range.y;
 
-        return meshParameters;
+            Undo.RecordObject(meshSparklyEffect, "Changed Size Min-Max");
+        });
+        var lifeTimeMinMaxProp = _root.Q<UIToolkitExtensions.MinMaxSliderWithValue>("life-time-min-max");
+        lifeTimeMinMaxProp.RegisterValueChangedCallback(range =>
+        {
+            meshSparklyEffect.lifeTimeMin = range.x;
+            meshSparklyEffect.lifeTimeMax = range.y;
+
+            Undo.RecordObject(meshSparklyEffect, "Changed Life Time Min-Max");
+        });
+
+        // Sparkle parameters
+        _modeSwitchButton = _root.Q<Button>("sparkle-mode-button");
+        _modeSwitchButton.clicked += OnClickedModeButton;
+        _modeSwitchButton.text =
+            meshSparklyEffect.useTexture ? ModeButtonTextOnTextureMode : ModeButtonTextOnProceduralMode;
+
+        _proceduralModeParameter = _root.Q<VisualElement>("procedural-mode-parameters");
+        _proceduralModeParameter.style.display = meshSparklyEffect.useTexture ? DisplayStyle.None : DisplayStyle.Flex;
+        _textureModeParameter = _root.Q<VisualElement>("texture-mode-parameters");
+        _textureModeParameter.style.display = meshSparklyEffect.useTexture ? DisplayStyle.Flex : DisplayStyle.None;
+
+        return _root;
     }
 
-    private void OnChangedTargetMesh(SerializedPropertyChangeEvent changeEvent)
+    private void OnChangedTargetMesh()
     {
         RemoveWhenContains(_root, _errorMessageBox);
 
@@ -212,89 +205,6 @@ public class MeshSparklyEffectInspector : Editor
         }
 
         return true;
-    }
-
-    private VisualElement CreateSharedParametersUI()
-    {
-        var meshParticleEmitter = target as MeshSparklyEffect;
-
-        var sharedParameters = new VisualElement();
-
-        var colorTextureProp = new PropertyField(serializedObject.FindProperty("colorTexture"), "Color Texture");
-        var rateProp = new PropertyField(serializedObject.FindProperty("rate"), "Rate");
-        var alphaProp = new PropertyField(serializedObject.FindProperty("alpha"), "Alpha");
-        var sizeDecayCurveProp = new PropertyField(serializedObject.FindProperty("sizeDecayCurve"), "Size Decay Curve");
-        var sizeMinProp = new PropertyField(serializedObject.FindProperty("sizeMin"), "Size Min");
-        var sizeMaxProp = new PropertyField(serializedObject.FindProperty("sizeMax"), "Size Max");
-        sizeMinProp.RegisterValueChangeCallback(_ =>
-        {
-            meshParticleEmitter.sizeMin =
-                Mathf.Clamp(meshParticleEmitter.sizeMin, 0.0f, meshParticleEmitter.sizeMax);
-        });
-        sizeMaxProp.RegisterValueChangeCallback(_ =>
-        {
-            meshParticleEmitter.sizeMax = Mathf.Max(meshParticleEmitter.sizeMax, meshParticleEmitter.sizeMin);
-        });
-        var lifeTimeMinProp = new PropertyField(serializedObject.FindProperty("lifeTimeMin"), "Life Time Min");
-        var lifeTimeMaxProp = new PropertyField(serializedObject.FindProperty("lifeTimeMax"), "Life Time Max");
-        lifeTimeMinProp.RegisterValueChangeCallback(_ =>
-        {
-            meshParticleEmitter.lifeTimeMin =
-                Mathf.Clamp(meshParticleEmitter.lifeTimeMin, 0.0f, meshParticleEmitter.lifeTimeMax);
-        });
-        lifeTimeMaxProp.RegisterValueChangeCallback(_ =>
-        {
-            meshParticleEmitter.lifeTimeMax =
-                Mathf.Max(meshParticleEmitter.lifeTimeMax, meshParticleEmitter.lifeTimeMin);
-        });
-        var emissionIntensityProp =
-            new PropertyField(serializedObject.FindProperty("emissionIntensity"), "Emission Intensity");
-        var rotateDegreeProp =
-            new PropertyField(serializedObject.FindProperty("rotateDegree"), "Rotate Degree");
-        var offsetProp = new PropertyField(serializedObject.FindProperty("offset"), "Offset");
-
-        sharedParameters.Add(colorTextureProp);
-        sharedParameters.Add(rateProp);
-        sharedParameters.Add(alphaProp);
-        sharedParameters.Add(sizeDecayCurveProp);
-        sharedParameters.Add(sizeMinProp);
-        sharedParameters.Add(sizeMaxProp);
-        sharedParameters.Add(lifeTimeMinProp);
-        sharedParameters.Add(lifeTimeMaxProp);
-        sharedParameters.Add(emissionIntensityProp);
-        sharedParameters.Add(rotateDegreeProp);
-        sharedParameters.Add(offsetProp);
-
-        sharedParameters.style.marginTop = Margin;
-        sharedParameters.style.marginBottom = Margin;
-
-        return sharedParameters;
-    }
-
-    private VisualElement CreateTextureModeUI()
-    {
-        var textureModeParameters = new VisualElement();
-
-        var sparkleTextureProp = new PropertyField(serializedObject.FindProperty("sparkleTexture"), "Sparkle Texture");
-
-        textureModeParameters.Add(sparkleTextureProp);
-
-        textureModeParameters.style.marginTop = Margin * 0.5f;
-
-        return textureModeParameters;
-    }
-
-    private VisualElement CreateProceduralModeUI()
-    {
-        var proceduralModeParameters = new VisualElement();
-
-        var widthProp = new PropertyField(serializedObject.FindProperty("width"), "Spike Width");
-
-        proceduralModeParameters.Add(widthProp);
-
-        proceduralModeParameters.style.marginTop = Margin * 0.5f;
-
-        return proceduralModeParameters;
     }
 
     private void OnClickedModeButton()

@@ -7,7 +7,7 @@ using UnityEngine.UIElements;
 
 namespace UIToolkitExtensions
 {
-    internal class MinMaxSliderWithValue : VisualElement
+    public class MinMaxSliderWithValue : VisualElement
     {
         public new class UxmlFactory : UxmlFactory<MinMaxSliderWithValue, UxmlTraits>
         {
@@ -53,6 +53,7 @@ namespace UIToolkitExtensions
             public override void Init(VisualElement visualElement, IUxmlAttributes bag, CreationContext creationContext)
             {
                 base.Init(visualElement, bag, creationContext);
+
                 var newTitle = titleText.GetValueFromBag(bag, creationContext);
                 var newLowLimit = lowLimitAttr.GetValueFromBag(bag, creationContext);
                 var newHighLimit = highLimitAttr.GetValueFromBag(bag, creationContext);
@@ -110,6 +111,7 @@ namespace UIToolkitExtensions
             }
         }
 
+        private VisualElement _root;
         private Label _title;
         private MinMaxSlider _slider;
         private FloatField _lowLimit;
@@ -119,19 +121,23 @@ namespace UIToolkitExtensions
 
         private Action<Vector2> _onValueChanged;
 
-        public MinMaxSliderWithValue()
+        public MinMaxSliderWithValue() : this(null)
+        {
+        }
+
+        public MinMaxSliderWithValue(string label)
         {
             var uxml = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(
                 "Assets/MeshSparklyEffect/Editor/MinMaxSliderWithValue.uxml");
-            VisualElement root = uxml.CloneTree();
-            root.name = "min-max-slider-with-value";
+            _root = uxml.CloneTree();
+            _root.name = "min-max-slider-with-value";
 
-            _title = root.Q<Label>("title");
-            _slider = root.Q<MinMaxSlider>("min-max-slider");
-            _lowLimit = root.Q<FloatField>("low-limit");
-            _highLimit = root.Q<FloatField>("high-limit");
-            _minValue = root.Q<FloatField>("min-value");
-            _maxValue = root.Q<FloatField>("max-value");
+            _title = _root.Q<Label>("title");
+            _slider = _root.Q<MinMaxSlider>("min-max-slider");
+            _lowLimit = _root.Q<FloatField>("low-limit");
+            _highLimit = _root.Q<FloatField>("high-limit");
+            _minValue = _root.Q<FloatField>("min-value");
+            _maxValue = _root.Q<FloatField>("max-value");
 
             _slider.RegisterValueChangedCallback(changeEvent =>
             {
@@ -184,7 +190,7 @@ namespace UIToolkitExtensions
                 _onValueChanged?.Invoke(new Vector2(_minValue.value, changeEvent.newValue));
             });
 
-            hierarchy.Add(root);
+            hierarchy.Add(_root);
         }
 
         public void Initialize(string newTitle, float newLowLimit, float newHighLimit, float newMinValue,
