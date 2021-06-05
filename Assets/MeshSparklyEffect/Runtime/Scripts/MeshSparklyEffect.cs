@@ -18,8 +18,12 @@ public class MeshSparklyEffect : MonoBehaviour
     public AnimationCurve sizeDecayCurve;
     public float sizeMin;
     public float sizeMax;
+    public float sizeLowLimit = 0.0f;
+    public float sizeHighLimit = 10.0f;
     public float lifeTimeMin;
     public float lifeTimeMax;
+    public float lifeTimeLowLimit = 0.0f;
+    public float lifeTimeHighLimit = 10.0f;
     public float emissionIntensity;
     public float rotateDegree;
     public float offset;

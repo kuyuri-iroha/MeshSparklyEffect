@@ -11,7 +11,7 @@
             <uie:PropertyField name="alpha" binding-path="alpha" label="Alpha" style="margin-left: 3px; margin-right: 3px; margin-top: 1px; margin-bottom: 1px;" />
             <uie:CurveField label="Size Decay Curve" name="size-decay-curve" binding-path="sizeDecayCurve" />
             <UIToolkitExtensions.MinMaxSliderWithValue name="size-min-max" title="Size Min-Max" high-limit="1" min-value="0.2" max-value="0.4" focusable="true" min-value-bind-path="sizeMin" max-value-bind-path="sizeMax" style="margin-left: 3px; margin-right: 3px; margin-top: 3px; margin-bottom: 3px;" />
-            <UIToolkitExtensions.MinMaxSliderWithValue name="life-time-min-max" title="Life Time Min Max" high-limit="1" min-value="0.21" max-value="0.35" focusable="true" style="margin-left: 3px; margin-right: 3px; margin-top: 3px; margin-bottom: 3px;" />
+            <UIToolkitExtensions.MinMaxSliderWithValue name="life-time-min-max" title="Life Time Min-Max" high-limit="1" min-value="0.21" max-value="0.35" focusable="true" style="margin-left: 3px; margin-right: 3px; margin-top: 3px; margin-bottom: 3px;" />
             <uie:FloatField label="Emission Intensity" value="10" name="emission-intensity" binding-path="emissionIntensity" />
             <uie:FloatField label="Rotate Degree" value="60" name="rotate-degree" binding-path="rotateDegree" />
             <uie:FloatField label="Offset" value="0.01" binding-path="offset" name="offset" />

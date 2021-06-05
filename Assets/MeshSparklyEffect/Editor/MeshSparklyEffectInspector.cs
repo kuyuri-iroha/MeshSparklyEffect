@@ -1,4 +1,5 @@
 using System;
+using UIToolkitExtensions;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -20,6 +21,8 @@ public class MeshSparklyEffectInspector : Editor
     private const string ModeButtonTextOnMeshFilterMode = "Switch SkinnedMeshRenderer Mode";
     private const string ModeButtonTextOnSkinnedMeshRendererMode = "Switch MeshFilter Mode";
 
+    private const string UndoRecordName = "Changed MinMaxSlider";
+
     private const float Margin = 10.0f;
 
     private VisualElement _root;
@@ -29,6 +32,8 @@ public class MeshSparklyEffectInspector : Editor
     private Button _modeSwitchButton;
     private VisualElement _proceduralModeParameter;
     private VisualElement _textureModeParameter;
+    private MinMaxSliderWithValue _sizeMinMaxProp;
+    private MinMaxSliderWithValue _lifeTimeMinMaxProp;
 
     public override VisualElement CreateInspectorGUI()
     {
@@ -80,22 +85,33 @@ public class MeshSparklyEffectInspector : Editor
 
         // Parameters root
         _parametersRoot = _root.Q<VisualElement>("parameters-root");
-        var sizeMinMaxProp = _root.Q<UIToolkitExtensions.MinMaxSliderWithValue>("size-min-max");
-        sizeMinMaxProp.RegisterValueChangedCallback(range =>
+        _sizeMinMaxProp = _root.Q<MinMaxSliderWithValue>("size-min-max");
+        _sizeMinMaxProp.RegisterValueChangedCallback((range, limit) =>
         {
+            Undo.RecordObject(meshSparklyEffect, "Changed Slider");
+
             meshSparklyEffect.sizeMin = range.x;
             meshSparklyEffect.sizeMax = range.y;
-
-            Undo.RecordObject(meshSparklyEffect, "Changed Size Min-Max");
+            meshSparklyEffect.sizeLowLimit = limit.x;
+            meshSparklyEffect.sizeHighLimit = limit.y;
         });
-        var lifeTimeMinMaxProp = _root.Q<UIToolkitExtensions.MinMaxSliderWithValue>("life-time-min-max");
-        lifeTimeMinMaxProp.RegisterValueChangedCallback(range =>
+        _sizeMinMaxProp.ApplyMinMaxValue(meshSparklyEffect.sizeMin, meshSparklyEffect.sizeMax,
+            meshSparklyEffect.sizeLowLimit, meshSparklyEffect.sizeHighLimit);
+
+        _lifeTimeMinMaxProp = _root.Q<MinMaxSliderWithValue>("life-time-min-max");
+        _lifeTimeMinMaxProp.RegisterValueChangedCallback((range, limit) =>
         {
+            Undo.RecordObject(meshSparklyEffect, "Changed Slider");
+
             meshSparklyEffect.lifeTimeMin = range.x;
             meshSparklyEffect.lifeTimeMax = range.y;
-
-            Undo.RecordObject(meshSparklyEffect, "Changed Life Time Min-Max");
+            meshSparklyEffect.lifeTimeLowLimit = limit.x;
+            meshSparklyEffect.lifeTimeHighLimit = limit.y;
         });
+        _lifeTimeMinMaxProp.ApplyMinMaxValue(meshSparklyEffect.lifeTimeMin, meshSparklyEffect.lifeTimeMax,
+            meshSparklyEffect.lifeTimeLowLimit, meshSparklyEffect.lifeTimeHighLimit);
+
+        Undo.undoRedoPerformed += ApplyMinMaxValues;
 
         // Sparkle parameters
         _modeSwitchButton = _root.Q<Button>("sparkle-mode-button");
@@ -109,6 +125,21 @@ public class MeshSparklyEffectInspector : Editor
         _textureModeParameter.style.display = meshSparklyEffect.useTexture ? DisplayStyle.Flex : DisplayStyle.None;
 
         return _root;
+    }
+
+    private void OnDestroy()
+    {
+        _lifeTimeMinMaxProp.UnRegisterAllValueChangedCallback();
+        Undo.undoRedoPerformed -= ApplyMinMaxValues;
+    }
+
+    private void ApplyMinMaxValues()
+    {
+        var meshSparklyEffect = target as MeshSparklyEffect;
+        _sizeMinMaxProp?.ApplyMinMaxValue(meshSparklyEffect.sizeMin, meshSparklyEffect.sizeMax,
+            meshSparklyEffect.sizeLowLimit, meshSparklyEffect.sizeHighLimit);
+        _lifeTimeMinMaxProp?.ApplyMinMaxValue(meshSparklyEffect.lifeTimeMin, meshSparklyEffect.lifeTimeMax,
+            meshSparklyEffect.lifeTimeLowLimit, meshSparklyEffect.lifeTimeHighLimit);
     }
 
     private void OnChangedTargetMesh()

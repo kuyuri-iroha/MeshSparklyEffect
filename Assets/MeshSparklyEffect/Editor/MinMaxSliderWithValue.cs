@@ -71,7 +71,7 @@ namespace UIToolkitExtensions
             set => _title.text = value;
         }
 
-        public float lowLimit
+        public float lowLimitValue
         {
             get => _lowLimit.value;
             set
@@ -81,7 +81,7 @@ namespace UIToolkitExtensions
             }
         }
 
-        public float highLimit
+        public float highLimitValue
         {
             get => _highLimit.value;
             set
@@ -119,7 +119,7 @@ namespace UIToolkitExtensions
         private FloatField _minValue;
         private FloatField _maxValue;
 
-        private Action<Vector2> _onValueChanged;
+        private Action<Vector2, Vector2> _onValueChanged;
 
         public MinMaxSliderWithValue() : this(null)
         {
@@ -180,14 +180,24 @@ namespace UIToolkitExtensions
             });
 
             // ユーザースクリプト側のイベント登録
-            _slider.RegisterValueChangedCallback(changeEvent => { _onValueChanged?.Invoke(changeEvent.newValue); });
+            _slider.RegisterValueChangedCallback(changeEvent =>
+            {
+                _onValueChanged?.Invoke(changeEvent.newValue, new Vector2(_lowLimit.value, _highLimit.value));
+            });
             _minValue.RegisterValueChangedCallback(changeEvent =>
             {
-                _onValueChanged?.Invoke(new Vector2(changeEvent.newValue, _maxValue.value));
+                _onValueChanged?.Invoke(new Vector2(changeEvent.newValue, _maxValue.value),
+                    new Vector2(_lowLimit.value, _highLimit.value));
             });
             _maxValue.RegisterValueChangedCallback(changeEvent =>
             {
-                _onValueChanged?.Invoke(new Vector2(_minValue.value, changeEvent.newValue));
+                _onValueChanged?.Invoke(new Vector2(_minValue.value, changeEvent.newValue),
+                    new Vector2(_lowLimit.value, _highLimit.value));
+            });
+            _maxValue.RegisterValueChangedCallback(changeEvent =>
+            {
+                _onValueChanged?.Invoke(new Vector2(_minValue.value, _maxValue.value),
+                    new Vector2(_lowLimit.value, _highLimit.value));
             });
 
             hierarchy.Add(_root);
@@ -197,20 +207,32 @@ namespace UIToolkitExtensions
             float newMaxValue)
         {
             title = newTitle;
-            lowLimit = newLowLimit;
-            highLimit = newHighLimit;
+            lowLimitValue = newLowLimit;
+            highLimitValue = newHighLimit;
             minValue = newMinValue;
             maxValue = newMaxValue;
         }
 
-        public void RegisterValueChangedCallback(Action<Vector2> callback)
+        public void RegisterValueChangedCallback(Action<Vector2, Vector2> callback)
         {
             _onValueChanged += callback;
         }
 
-        public void UnRegisterValueChangedCallback(Action<Vector2> callback)
+        public void UnRegisterAllValueChangedCallback()
         {
-            _onValueChanged -= callback;
+            _onValueChanged = null;
+        }
+
+        public void ApplyMinMaxValue(float min, float max, float lowLimit, float highLimit)
+        {
+            _minValue.value = min;
+            _maxValue.value = max;
+            _slider.minValue = min;
+            _slider.maxValue = max;
+            _lowLimit.value = lowLimit;
+            _highLimit.value = highLimit;
+            _slider.lowLimit = lowLimit;
+            _slider.highLimit = highLimit;
         }
     }
 }
