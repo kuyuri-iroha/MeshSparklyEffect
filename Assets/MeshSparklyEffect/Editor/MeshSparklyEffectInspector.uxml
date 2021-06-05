@@ -1,0 +1,27 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <ui:Button text="Switch MeshFilter Mode" display-tooltip-when-elided="true" name="mesh-mode-button" />
+    <ui:VisualElement name="mesh-parameters" style="margin-top: 0; margin-bottom: 0;">
+        <uie:ObjectField label="Target SkinnedMeshRenderer" name="skinned-mesh-renderer" type="UnityEngine.SkinnedMeshRenderer, UnityEngine.CoreModule" binding-path="targetMesh" style="margin-top: 10px; margin-bottom: 10px;" />
+        <uie:ObjectField label="Target MeshFilter" name="mesh-filter" type="UnityEngine.MeshFilter, UnityEngine.CoreModule" binding-path="targetMeshFilter" style="margin-top: 10px; margin-bottom: 10px;" />
+    </ui:VisualElement>
+    <ui:VisualElement name="parameters-root">
+        <ui:VisualElement name="shared-parameters" style="margin-top: 10px; margin-bottom: 10px;">
+            <uie:ObjectField label="Color Texture" binding-path="colorTexture" type="UnityEngine.Texture2D, UnityEngine.CoreModule" name="color-texture" />
+            <uie:IntegerField label="Rate" value="5" binding-path="rate" name="rate" />
+            <uie:PropertyField name="alpha" binding-path="alpha" label="Alpha" style="margin-left: 3px; margin-right: 3px; margin-top: 1px; margin-bottom: 1px;" />
+            <uie:CurveField label="Size Decay Curve" name="size-decay-curve" binding-path="sizeDecayCurve" />
+            <UIToolkitExtensions.MinMaxSliderWithValue name="size-min-max" title="Size Min-Max" high-limit="1" min-value="0.2" max-value="0.4" focusable="true" min-value-bind-path="sizeMin" max-value-bind-path="sizeMax" style="margin-left: 3px; margin-right: 3px; margin-top: 3px; margin-bottom: 3px;" />
+            <UIToolkitExtensions.MinMaxSliderWithValue name="life-time-min-max" title="Life Time Min-Max" high-limit="1" min-value="0.21" max-value="0.35" focusable="true" style="margin-left: 3px; margin-right: 3px; margin-top: 3px; margin-bottom: 3px;" />
+            <uie:FloatField label="Emission Intensity" value="10" name="emission-intensity" binding-path="emissionIntensity" />
+            <uie:FloatField label="Rotate Degree" value="60" name="rotate-degree" binding-path="rotateDegree" />
+            <uie:FloatField label="Offset" value="0.01" binding-path="offset" name="offset" />
+        </ui:VisualElement>
+        <ui:Button text="Switch Texture Mode" display-tooltip-when-elided="true" name="sparkle-mode-button" />
+        <ui:VisualElement name="procedural-mode-parameters">
+            <uie:PropertyField name="width" binding-path="width" label="Spike Width" />
+        </ui:VisualElement>
+        <ui:VisualElement name="texture-mode-parameters">
+            <uie:ObjectField label="Sparkle Texture" name="sparkle-texture" binding-path="sparkleTexture" type="UnityEngine.Texture2D, UnityEngine.CoreModule" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

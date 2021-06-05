@@ -18,11 +18,14 @@ public class MeshSparklyEffect : MonoBehaviour
     public AnimationCurve sizeDecayCurve;
     public float sizeMin;
     public float sizeMax;
+    public float sizeLowLimit = 0.0f;
+    public float sizeHighLimit = 10.0f;
     public float lifeTimeMin;
     public float lifeTimeMax;
+    public float lifeTimeLowLimit = 0.0f;
+    public float lifeTimeHighLimit = 10.0f;
     public float emissionIntensity;
-    public float rotateDegreeMin;
-    public float rotateDegreeMax;
+    public float rotateDegree;
     public float offset;
     public bool useTexture;
     public Texture2D sparkleTexture;
@@ -46,8 +49,7 @@ public class MeshSparklyEffect : MonoBehaviour
     private static readonly int LifeTimeMinID = Shader.PropertyToID("LifeTimeMin");
     private static readonly int LifeTimeMaxID = Shader.PropertyToID("LifeTimeMax");
     private static readonly int EmissionIntensityID = Shader.PropertyToID("EmissionIntensity");
-    private static readonly int RotateDegreeMinID = Shader.PropertyToID("RotateDegreeMin");
-    private static readonly int RotateDegreeMaxID = Shader.PropertyToID("RotateDegreeMax");
+    private static readonly int RotateDegreeID = Shader.PropertyToID("RotateDegree");
     private static readonly int OffsetID = Shader.PropertyToID("Offset");
     private static readonly int UseTextureID = Shader.PropertyToID("UseTexture");
     private static readonly int SparkleTextureID = Shader.PropertyToID("SparkleTexture");
@@ -100,11 +102,10 @@ public class MeshSparklyEffect : MonoBehaviour
         lifeTimeMin = _effect.GetFloat(LifeTimeMinID);
         lifeTimeMax = _effect.GetFloat(LifeTimeMaxID);
         emissionIntensity = _effect.GetFloat(EmissionIntensityID);
-        rotateDegreeMin = _effect.GetFloat(RotateDegreeMinID);
-        rotateDegreeMax = _effect.GetFloat(RotateDegreeMaxID);
+        rotateDegree = _effect.GetFloat(RotateDegreeID);
         offset = _effect.GetFloat(OffsetID);
         useTexture = _effect.GetBool(UseTextureID);
-        sparkleTexture = (Texture2D) _effect.GetTexture(SparkleTextureID);
+        sparkleTexture = _effect.GetTexture(SparkleTextureID) as Texture2D;
     }
 
     private void SetProperties()
@@ -126,8 +127,7 @@ public class MeshSparklyEffect : MonoBehaviour
         _effect.SetFloat(LifeTimeMinID, lifeTimeMin);
         _effect.SetFloat(LifeTimeMaxID, lifeTimeMax);
         _effect.SetFloat(EmissionIntensityID, emissionIntensity);
-        _effect.SetFloat(RotateDegreeMinID, rotateDegreeMin);
-        _effect.SetFloat(RotateDegreeMaxID, rotateDegreeMax);
+        _effect.SetFloat(RotateDegreeID, rotateDegree);
         _effect.SetFloat(OffsetID, offset);
         _effect.SetBool(UseTextureID, useTexture);
         _effect.SetTexture(SparkleTextureID, sparkleTexture);
