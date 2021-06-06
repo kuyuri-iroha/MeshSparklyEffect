@@ -8,6 +8,13 @@
     "com.unity.visualeffectgraph": "10.5.0",
     "com.unity.render-pipelines.universal": "10.5.0"
   },
+  "samples": [
+    {
+      "displayName": "MeshFilter Sample",
+      "description": "Sample of sparkly effect from MeshFilter",
+      "path": "Samples/MeshFilterSample"
+    }
+  ],
   "keywords": [
     "vfx",
     "dynamic point cache"
