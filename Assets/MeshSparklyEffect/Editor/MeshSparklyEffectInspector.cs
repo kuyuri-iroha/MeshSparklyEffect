@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using UIToolkitExtensions;
 using UnityEditor;
 using UnityEngine;
@@ -24,7 +25,10 @@ public class MeshSparklyEffectInspector : Editor
     private const string ConvertButtonTextOnMapMode = "Convert to Mesh";
     private const string ConvertButtonTextOnMeshMode = "Convert to Map";
 
-    private const string UndoRecordName = "Changed MinMaxSlider";
+    private const string UndoRecordName = "Changed MeshSparklyEffect convert mode";
+
+    private const string BakeErrorMessage =
+        "Failed baking texture. Make sure that you have specified the correct directory.";
 
     private const float Margin = 10.0f;
 
@@ -57,10 +61,12 @@ public class MeshSparklyEffectInspector : Editor
         // Mesh parameters
         var targetMeshProp = _root.Q<ObjectField>("skinned-mesh-renderer");
         targetMeshProp.RegisterValueChangedCallback(_ => OnChangedTargetMesh());
+        targetMeshProp.RegisterCallback<DragExitedEvent>(_ => OnChangedTargetMesh());
         targetMeshProp.style.display = meshSparklyEffect.useMeshFilter ? DisplayStyle.None : DisplayStyle.Flex;
 
         var targetMeshFilterProp = _root.Q<ObjectField>("mesh-filter");
         targetMeshFilterProp.RegisterValueChangedCallback(_ => OnChangedTargetMesh());
+        targetMeshFilterProp.RegisterCallback<DragExitedEvent>(_ => OnChangedTargetMesh());
         targetMeshFilterProp.style.display = meshSparklyEffect.useMeshFilter ? DisplayStyle.Flex : DisplayStyle.None;
 
         var modeButton = _root.Q<Button>("mesh-mode-button");
@@ -103,7 +109,7 @@ public class MeshSparklyEffectInspector : Editor
         _lifeTimeMinMaxProp = _root.Q<MinMaxSliderWithValue>("life-time-min-max");
         _lifeTimeMinMaxProp.RegisterValueChangedCallback((range, limit) =>
         {
-            Undo.RecordObject(meshSparklyEffect, "Changed MeshSparklyEffect Slider");
+            Undo.RecordObject(meshSparklyEffect, UndoRecordName);
 
             meshSparklyEffect.lifeTimeMin = range.x;
             meshSparklyEffect.lifeTimeMax = range.y;
@@ -125,11 +131,11 @@ public class MeshSparklyEffectInspector : Editor
         _textureModeParameter = _root.Q<VisualElement>("texture-mode-parameters");
         _textureModeParameter.style.display = meshSparklyEffect.useTexture ? DisplayStyle.Flex : DisplayStyle.None;
 
-        // Convert Button
+        // Convert button
         _convertButton = _root.Q<Button>("convert-button");
         _convertButton.RegisterCallback<ClickEvent>(_ =>
         {
-            Undo.RecordObject(meshSparklyEffect, "Changed MeshSparklyEffect convert mode");
+            Undo.RecordObject(meshSparklyEffect, UndoRecordName);
 
             meshSparklyEffect.isMapMode = !meshSparklyEffect.isMapMode;
             ApplyConvertMode();
@@ -137,12 +143,38 @@ public class MeshSparklyEffectInspector : Editor
         ApplyConvertMode();
         Undo.undoRedoPerformed += ApplyConvertMode;
 
+        // Bake button
+        var bakeButton = _root.Q<Button>("bake-button");
+        bakeButton.RegisterCallback<ClickEvent>(_ =>
+        {
+            RemoveWhenContains(_root, _errorMessageBox);
+
+            var path = EditorUtility.SaveFolderPanel("Save texture as EXR", "", "");
+            if (path.Length != 0)
+            {
+                var meshName = meshSparklyEffect.useMeshFilter
+                    ? meshSparklyEffect.targetMeshFilter.name
+                    : meshSparklyEffect.targetMesh.name;
+
+                var bytes = meshSparklyEffect.positionMap.EncodeToEXR();
+                File.WriteAllBytes($"{path}/{meshName}_PositionMap.exr", bytes);
+                bytes = meshSparklyEffect.normalMap.EncodeToEXR();
+                File.WriteAllBytes($"{path}/{meshName}_NormalMap.exr", bytes);
+                bytes = meshSparklyEffect.uvMap.EncodeToEXR();
+                File.WriteAllBytes($"{path}/{meshName}_UVMap.exr", bytes);
+
+                EditorUtility.DisplayDialog("Bake succeeded", $"Save to {path}", "OK");
+            }
+
+            AssetDatabase.Refresh();
+        });
+
         return _root;
     }
 
     private void OnDestroy()
     {
-        _lifeTimeMinMaxProp.UnRegisterAllValueChangedCallback();
+        _lifeTimeMinMaxProp?.UnRegisterAllValueChangedCallback();
         Undo.undoRedoPerformed -= ApplyMinMaxValues;
         Undo.undoRedoPerformed -= ApplyConvertMode;
     }
