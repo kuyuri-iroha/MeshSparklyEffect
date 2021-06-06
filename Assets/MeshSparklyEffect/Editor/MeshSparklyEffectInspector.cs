@@ -9,6 +9,8 @@ using UnityEditor.UIElements;
 [CustomEditor(typeof(MeshSparklyEffect))]
 public class MeshSparklyEffectInspector : Editor
 {
+    [SerializeField] private VisualTreeAsset meshSparklyEffectInspectorUXML;
+
     private const string NullReferenceErrorMessage = " is missing.";
 
     private static readonly string NotReadableErrorMessage =
@@ -27,9 +29,6 @@ public class MeshSparklyEffectInspector : Editor
 
     private const string UndoRecordName = "Changed MeshSparklyEffect convert mode";
 
-    private const string BakeErrorMessage =
-        "Failed baking texture. Make sure that you have specified the correct directory.";
-
     private const float Margin = 10.0f;
 
     private VisualElement _root;
@@ -47,9 +46,7 @@ public class MeshSparklyEffectInspector : Editor
     {
         var meshSparklyEffect = target as MeshSparklyEffect;
 
-        var uxml = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(
-            "Assets/MeshSparklyEffect/Editor/MeshSparklyEffectInspector.uxml");
-        _root = uxml.CloneTree();
+        _root = meshSparklyEffectInspectorUXML.CloneTree();
         _root.name = "mesh-sparkly-effect";
         _root.Bind(serializedObject);
 

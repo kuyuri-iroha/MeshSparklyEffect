@@ -3,7 +3,8 @@ guid: e100915faa44f2449871e213836f8e4c
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - meshSparklyEffectInspectorUXML: {fileID: 9197481963319205126, guid: 4c5601c207ef78b409fd3931bac0a201, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
