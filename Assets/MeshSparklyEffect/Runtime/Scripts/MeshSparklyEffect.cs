@@ -29,12 +29,13 @@ public class MeshSparklyEffect : MonoBehaviour
     public float offset;
     public bool useTexture;
     public Texture2D sparkleTexture;
+    public bool isMapMode;
 
     private VisualEffect _effect;
 
-    private Texture2D _positionMap = null;
-    private Texture2D _normalMap = null;
-    private Texture2D _uvMap = null;
+    public Texture2D positionMap = null;
+    public Texture2D normalMap = null;
+    public Texture2D uvMap = null;
 
     private int _targetMeshInstanceID;
     private int _targetMeshFilterInstanceID;
@@ -61,9 +62,9 @@ public class MeshSparklyEffect : MonoBehaviour
 
     public void CreateMaps()
     {
-        _positionMap = MeshToPositionMap(GetMesh());
-        _normalMap = MeshToNormalMap(GetMesh());
-        _uvMap = MeshToUVMap(GetMesh());
+        positionMap = MeshToPositionMap(GetMesh());
+        normalMap = MeshToNormalMap(GetMesh());
+        uvMap = MeshToUVMap(GetMesh());
 
         _targetMeshInstanceID = targetMesh.GetInstanceID();
         _targetMeshFilterInstanceID = targetMeshFilter.GetInstanceID();
@@ -112,10 +113,10 @@ public class MeshSparklyEffect : MonoBehaviour
     {
         if (_mapsCreated)
         {
-            _effect.SetTexture("_PositionMap", _positionMap);
+            _effect.SetTexture("_PositionMap", positionMap);
             if (colorTexture != null) _effect.SetTexture("_ColorTexture", colorTexture);
-            _effect.SetTexture("_NormalMap", _normalMap);
-            _effect.SetTexture("_UVMap", _uvMap);
+            _effect.SetTexture("_NormalMap", normalMap);
+            _effect.SetTexture("_UVMap", uvMap);
         }
 
         _effect.SetUInt(RateID, rate);

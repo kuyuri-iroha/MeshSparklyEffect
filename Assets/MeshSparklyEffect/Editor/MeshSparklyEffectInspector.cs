@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using UIToolkitExtensions;
 using UnityEditor;
 using UnityEngine;
@@ -21,7 +22,13 @@ public class MeshSparklyEffectInspector : Editor
     private const string ModeButtonTextOnMeshFilterMode = "Switch SkinnedMeshRenderer Mode";
     private const string ModeButtonTextOnSkinnedMeshRendererMode = "Switch MeshFilter Mode";
 
-    private const string UndoRecordName = "Changed MinMaxSlider";
+    private const string ConvertButtonTextOnMapMode = "Convert to Mesh";
+    private const string ConvertButtonTextOnMeshMode = "Convert to Map";
+
+    private const string UndoRecordName = "Changed MeshSparklyEffect convert mode";
+
+    private const string BakeErrorMessage =
+        "Failed baking texture. Make sure that you have specified the correct directory.";
 
     private const float Margin = 10.0f;
 
@@ -34,6 +41,7 @@ public class MeshSparklyEffectInspector : Editor
     private VisualElement _textureModeParameter;
     private MinMaxSliderWithValue _sizeMinMaxProp;
     private MinMaxSliderWithValue _lifeTimeMinMaxProp;
+    private Button _convertButton;
 
     public override VisualElement CreateInspectorGUI()
     {
@@ -53,10 +61,12 @@ public class MeshSparklyEffectInspector : Editor
         // Mesh parameters
         var targetMeshProp = _root.Q<ObjectField>("skinned-mesh-renderer");
         targetMeshProp.RegisterValueChangedCallback(_ => OnChangedTargetMesh());
+        targetMeshProp.RegisterCallback<DragExitedEvent>(_ => OnChangedTargetMesh());
         targetMeshProp.style.display = meshSparklyEffect.useMeshFilter ? DisplayStyle.None : DisplayStyle.Flex;
 
         var targetMeshFilterProp = _root.Q<ObjectField>("mesh-filter");
         targetMeshFilterProp.RegisterValueChangedCallback(_ => OnChangedTargetMesh());
+        targetMeshFilterProp.RegisterCallback<DragExitedEvent>(_ => OnChangedTargetMesh());
         targetMeshFilterProp.style.display = meshSparklyEffect.useMeshFilter ? DisplayStyle.Flex : DisplayStyle.None;
 
         var modeButton = _root.Q<Button>("mesh-mode-button");
@@ -88,29 +98,26 @@ public class MeshSparklyEffectInspector : Editor
         _sizeMinMaxProp = _root.Q<MinMaxSliderWithValue>("size-min-max");
         _sizeMinMaxProp.RegisterValueChangedCallback((range, limit) =>
         {
-            Undo.RecordObject(meshSparklyEffect, "Changed Slider");
+            Undo.RecordObject(meshSparklyEffect, "Changed MeshSparklyEffect Slider");
 
             meshSparklyEffect.sizeMin = range.x;
             meshSparklyEffect.sizeMax = range.y;
             meshSparklyEffect.sizeLowLimit = limit.x;
             meshSparklyEffect.sizeHighLimit = limit.y;
         });
-        _sizeMinMaxProp.ApplyMinMaxValue(meshSparklyEffect.sizeMin, meshSparklyEffect.sizeMax,
-            meshSparklyEffect.sizeLowLimit, meshSparklyEffect.sizeHighLimit);
 
         _lifeTimeMinMaxProp = _root.Q<MinMaxSliderWithValue>("life-time-min-max");
         _lifeTimeMinMaxProp.RegisterValueChangedCallback((range, limit) =>
         {
-            Undo.RecordObject(meshSparklyEffect, "Changed Slider");
+            Undo.RecordObject(meshSparklyEffect, UndoRecordName);
 
             meshSparklyEffect.lifeTimeMin = range.x;
             meshSparklyEffect.lifeTimeMax = range.y;
             meshSparklyEffect.lifeTimeLowLimit = limit.x;
             meshSparklyEffect.lifeTimeHighLimit = limit.y;
         });
-        _lifeTimeMinMaxProp.ApplyMinMaxValue(meshSparklyEffect.lifeTimeMin, meshSparklyEffect.lifeTimeMax,
-            meshSparklyEffect.lifeTimeLowLimit, meshSparklyEffect.lifeTimeHighLimit);
 
+        ApplyMinMaxValues();
         Undo.undoRedoPerformed += ApplyMinMaxValues;
 
         // Sparkle parameters
@@ -124,13 +131,52 @@ public class MeshSparklyEffectInspector : Editor
         _textureModeParameter = _root.Q<VisualElement>("texture-mode-parameters");
         _textureModeParameter.style.display = meshSparklyEffect.useTexture ? DisplayStyle.Flex : DisplayStyle.None;
 
+        // Convert button
+        _convertButton = _root.Q<Button>("convert-button");
+        _convertButton.RegisterCallback<ClickEvent>(_ =>
+        {
+            Undo.RecordObject(meshSparklyEffect, UndoRecordName);
+
+            meshSparklyEffect.isMapMode = !meshSparklyEffect.isMapMode;
+            ApplyConvertMode();
+        });
+        ApplyConvertMode();
+        Undo.undoRedoPerformed += ApplyConvertMode;
+
+        // Bake button
+        var bakeButton = _root.Q<Button>("bake-button");
+        bakeButton.RegisterCallback<ClickEvent>(_ =>
+        {
+            RemoveWhenContains(_root, _errorMessageBox);
+
+            var path = EditorUtility.SaveFolderPanel("Save texture as EXR", "", "");
+            if (path.Length != 0)
+            {
+                var meshName = meshSparklyEffect.useMeshFilter
+                    ? meshSparklyEffect.targetMeshFilter.name
+                    : meshSparklyEffect.targetMesh.name;
+
+                var bytes = meshSparklyEffect.positionMap.EncodeToEXR();
+                File.WriteAllBytes($"{path}/{meshName}_PositionMap.exr", bytes);
+                bytes = meshSparklyEffect.normalMap.EncodeToEXR();
+                File.WriteAllBytes($"{path}/{meshName}_NormalMap.exr", bytes);
+                bytes = meshSparklyEffect.uvMap.EncodeToEXR();
+                File.WriteAllBytes($"{path}/{meshName}_UVMap.exr", bytes);
+
+                EditorUtility.DisplayDialog("Bake succeeded", $"Save to {path}", "OK");
+            }
+
+            AssetDatabase.Refresh();
+        });
+
         return _root;
     }
 
     private void OnDestroy()
     {
-        _lifeTimeMinMaxProp.UnRegisterAllValueChangedCallback();
+        _lifeTimeMinMaxProp?.UnRegisterAllValueChangedCallback();
         Undo.undoRedoPerformed -= ApplyMinMaxValues;
+        Undo.undoRedoPerformed -= ApplyConvertMode;
     }
 
     private void ApplyMinMaxValues()
@@ -140,6 +186,26 @@ public class MeshSparklyEffectInspector : Editor
             meshSparklyEffect.sizeLowLimit, meshSparklyEffect.sizeHighLimit);
         _lifeTimeMinMaxProp?.ApplyMinMaxValue(meshSparklyEffect.lifeTimeMin, meshSparklyEffect.lifeTimeMax,
             meshSparklyEffect.lifeTimeLowLimit, meshSparklyEffect.lifeTimeHighLimit);
+    }
+
+    private void ApplyConvertMode()
+    {
+        var meshSparklyEffect = target as MeshSparklyEffect;
+        var meshParameters = _root?.Q<VisualElement>("mesh-parameters");
+        var convertedParameters = _root?.Q<VisualElement>("converted-parameters");
+
+        if (meshSparklyEffect.isMapMode)
+        {
+            convertedParameters.style.display = DisplayStyle.Flex;
+            meshParameters.style.display = DisplayStyle.None;
+            _convertButton.text = ConvertButtonTextOnMapMode;
+        }
+        else
+        {
+            convertedParameters.style.display = DisplayStyle.None;
+            meshParameters.style.display = DisplayStyle.Flex;
+            _convertButton.text = ConvertButtonTextOnMeshMode;
+        }
     }
 
     private void OnChangedTargetMesh()
