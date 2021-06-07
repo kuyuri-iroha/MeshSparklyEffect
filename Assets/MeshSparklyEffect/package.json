@@ -1,9 +1,9 @@
 {
-  "name": "com.kuyuri.meshparticleemitter",
-  "displayName": "MeshParticleEmitter - Kuyuri",
-  "version": "0.1.0",
+  "name": "com.kuyuri.meshsparklyeffect",
+  "displayName": "MeshSparklyEffect",
+  "version": "0.3.0",
   "unity": "2020.3",
-  "description": "Particle assets that fire according to the mesh.",
+  "description": "This is an effect for Unity that emits particles with a sparkling effect that matches the texture color from the specified mesh vertex position.",
   "dependencies": {
     "com.unity.visualeffectgraph": "10.5.0",
     "com.unity.render-pipelines.universal": "10.5.0"
