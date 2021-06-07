@@ -2,7 +2,7 @@
 
 ## 概要
 
-![](./Documentation/Images/pymon_demo.gif)
+![踊るパイモン](./Documentation/Images/pymon_demo.gif)
 
 指定したメッシュの頂点位置からテクスチャ色に合ったキラキラ感のあるパーティクルを出すUnity用のエフェクトです。
 
