@@ -1,5 +1,7 @@
 ﻿# Documentation for MeshSparklyEffect
 
+[日本語版](./MeshSparklyEffect_ja.md)
+
 ## Usage
 
 0. Make sure the Universal Render Pipeline Asset is set correctly in the Scriptable Render Pipeline Settings in the Graphics section of Project Settings.
@@ -20,7 +22,7 @@ If the Mesh to be switched to is not registered, an error will be displayed at t
 
 ### Target SkinnedMeshRenderer/MeshFilter
 
-Specify the mesh to be targeted. 
+Specify the mesh to be targeted.
 
 The position of the particle is determined based on the vertex information of the mesh specified here.
 

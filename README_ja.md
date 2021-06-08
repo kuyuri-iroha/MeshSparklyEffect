@@ -52,6 +52,10 @@ GameObjectにMeshSparklyEffect.csを追加することで、その下層にVisua
 - Universal RP
 - Visual Effect Graph
 
+## Collaborator
+
+- [murasaqi](https://github.com/murasaqi)
+
 ## License
 
 [MIT License](LICENSE)

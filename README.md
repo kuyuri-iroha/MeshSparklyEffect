@@ -1,5 +1,7 @@
 # MeshSparklyEffect
 
+[日本語版](./README_ja.md)
+
 ## Overview
 
 ![Dancing Pymon](./Assets/MeshSparklyEffect/Documentation/Images/pymon_demo.gif)
@@ -48,6 +50,10 @@ Development version：2020.3.9
 
 - Universal RP
 - Visual Effect Graph
+
+## Collaborator
+
+- [murasaqi](https://github.com/murasaqi)
 
 ## License
 

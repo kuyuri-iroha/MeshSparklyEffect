@@ -1,5 +1,7 @@
 # MeshSparklyEffect
 
+[日本語版](./README_ja.md)
+
 ## Overview
 
 ![Dancing Pymon](./Documentation/Images/pymon_demo.gif)
