@@ -48,3 +48,7 @@ Development version：2020.3.9
 
 - Universal RP
 - Visual Effect Graph
+
+## License
+
+[MIT License](LICENSE)
