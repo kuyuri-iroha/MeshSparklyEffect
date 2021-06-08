@@ -1,7 +1,7 @@
 {
   "name": "com.kuyuri.meshsparklyeffect",
   "displayName": "MeshSparklyEffect",
-  "version": "0.3.0",
+  "version": "1.0.0",
   "unity": "2020.3",
   "description": "This is an effect for Unity that emits particles with a sparkling effect that matches the texture color from the specified mesh vertex position.",
   "dependencies": {
@@ -24,6 +24,5 @@
     "email": "kuyuri.iroha@gmail.com",
     "url": "https://kuyuri-iroha.com"
   },
-  "license": "UNLICENSED",
-  "private": true
+  "license": "MIT"
 }

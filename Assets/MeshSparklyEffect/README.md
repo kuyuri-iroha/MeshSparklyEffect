@@ -1,53 +1,50 @@
 # MeshSparklyEffect
 
-## 概要
+## Overview
 
-![踊るパイモン](./Documentation/Images/pymon_demo.gif)
+![Dancing Pymon](./Documentation/Images/pymon_demo.gif)
 
-指定したメッシュの頂点位置からテクスチャ色に合ったキラキラ感のあるパーティクルを出すUnity用のエフェクトです。
+An effect for Unity that emits particles with sparkly effect matches the texture color from the specified mesh vertex position.
 
-パーティクルには、十字に伸びるプロシージャルなものと、テクスチャの2種類を使用できます。
+Two types of particles can be used: procedural ones that extend in a cross pattern, and textures.
 
-内部ではメッシュを指定した際に頂点情報をテクスチャに焼き込んでおり、焼き込んだテクスチャをEXRファイルとして保存することも可能です。
+Internally, vertex information is burned into textures when a mesh is specified, and the burned textures can be saved as EXR files.
 
-指定するメッシュの形式はSkinned Mesh RendererとMesh Filterに対応しています。
+Skinned Mesh Renderer and Mesh Filter are supported for the mesh format.
 
-なお、このエフェクトはアクセサリを始めとする小物類に使用することを想定して作成しているため、変形するメッシュには対応していません。
+This effect is designed to be used with accessories and other items, so it does not support deformable meshes.
 
 ## Installation
 
-このアセットはUnity Package Manager (UPM)を使用してインストールできます。
+This asset can be installed using the Unity Package Manager (UPM).
 
-インストールに必要なパッケージは以下の通りです。
+The packages required for installation are as follows.
 
-UPMを使用してインストールすることで自動的にインストールされます。
+(Will be installed automatically by installing using UPM.)
 
 - Universal RP
 - Visual Effect Graph
 
 ### From git URL
 
-Window > Package Manager を開いて左上の+マークをクリックすると表示される`Add package from git URL...`
-をクリックすると表示される入力欄に`git+ssh://git@github.com/Kuyuri-Iroha/MeshSparklyEffect.git?path=/Assets/MeshSparklyEffect`
-と入力することで最新のバージョンをインストールすることができます。
+Open `Window > Package Manager` and click the + sign in the upper left corner to display `Add package from git URL...`
+You can install the latest version by typing `git+ssh://git@github.com/Kuyuri-Iroha/MeshSparklyEffect.git?path=/Assets/MeshSparklyEffect` in the input field that appears when you click to install the latest version.
 
 ### From local disk (Release)
 
-GitHubのReleaseからMeshSparklyEffect.zipをダウンロードして解凍した後、Window > Package Manager
-を開いて左上の+マークをクリックすると表示される`Add package from disk...`から解凍したフォルダを選択することでインストールできます。
+Download MeshSparklyEffect.zip from Release on GitHub, unzip it, and then open `Window > Package Manager` and click the + sign in the upper left corner. Then, click `Add package from disk...` and select unziped folder to install.
 
-## 使い方
+## Usage
 
-Project SettingsのGraphicsでScriptable Render Pipeline SettingsにUniversal Render Pipeline Assetが正しくセットされていることを確認した後、
-GameObjectにMeshSparklyEffect.csを追加することで、その下層にVisual Effectが追加されたGameObjectが生成されて動作します。
+After making sure that the Universal Render Pipeline Asset is set correctly in the Scriptable Render Pipeline Settings in the Graphics section of Project Settings, add MeshSparklyEffect.cs to the GameObject, which will generate a GameObject with a Visual Effect added to its lower layer and work.
 
-詳しくはドキュメントを御覧ください。
+See the documentation for details.
 
-[MeshSparklyEffectのドキュメント](./Documentation/MeshSparklyEffect.md)
+[Documentation for MeshSparklyEffect](./Documentation/MeshSparklyEffect.md)
 
 ## Unity Version & Dependencies
 
-開発バージョン：2020.3.9
+Development version：2020.3.9
 
 - Universal RP
 - Visual Effect Graph
