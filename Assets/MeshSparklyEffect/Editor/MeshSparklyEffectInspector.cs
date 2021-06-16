@@ -46,6 +46,8 @@ namespace MeshSparklyEffect
 
         public override VisualElement CreateInspectorGUI()
         {
+            if (!meshSparklyEffectInspectorUXML) return new VisualElement();
+            
             var meshSparklyEffect = target as MeshSparklyEffect;
             var sparkleVFX = meshSparklyEffect.sparkleVFX;
 

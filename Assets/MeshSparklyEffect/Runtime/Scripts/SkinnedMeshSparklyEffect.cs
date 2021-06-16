@@ -11,8 +11,6 @@ namespace MeshSparklyEffect
         public SkinnedMeshRenderer targetMesh;
         public Texture2D colorTexture;
 
-        public bool isMapMode;
-
         public SparkleVFX sparkleVFX = new SparkleVFX();
 
         public RenderTexture positionMap;
@@ -34,6 +32,7 @@ namespace MeshSparklyEffect
 
             // Position map
             var vertexCount = targetMesh.sharedMesh.vertexCount;
+            _positionBuffer?.Dispose();
             _positionBuffer = new ComputeBuffer(vertexCount, Marshal.SizeOf<Vector3>());
             var r = Mathf.Sqrt(vertexCount);
             var width = (int) Mathf.Ceil(r);
@@ -95,10 +94,19 @@ namespace MeshSparklyEffect
         {
             if (sparkleVFX == null || targetMesh == null) return;
 
-            UpdatePositionMap();
-
             if (ResourcesHasChanged()) CreateMaps();
+            UpdatePositionMap();
             sparkleVFX.SetProperties(colorTexture, positionMap, normalMap, uvMap);
+        }
+
+        private void OnDisable() => Dispose();
+
+        private void OnDestroy() => Dispose();
+
+        private void Dispose()
+        {
+            _positionBuffer?.Dispose();
+            _positionBuffer = null;
         }
 
         private bool ResourcesHasChanged()

@@ -40,10 +40,11 @@ namespace MeshSparklyEffect
 
         public override VisualElement CreateInspectorGUI()
         {
+            if (!skinnedMeshSparklyEffectInspectorUXML) return new VisualElement();
+
             var meshSparklyEffect = target as SkinnedMeshSparklyEffect;
             var sparkleVFX = meshSparklyEffect.sparkleVFX;
 
-            Debug.Log(skinnedMeshSparklyEffectInspectorUXML);
             _root = skinnedMeshSparklyEffectInspectorUXML.CloneTree();
             _root.name = "mesh-sparkly-effect";
             _root.Bind(serializedObject);
