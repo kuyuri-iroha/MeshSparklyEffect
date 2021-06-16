@@ -1,0 +1,12 @@
+﻿#pragma kernel BakeToRenderTexture
+
+uint VertexCount;
+StructuredBuffer<float3> PositionBuffer;
+
+RWTexture2D<float4> PositionMap;
+
+[numthreads(8, 8, 1)]
+void BakeToRenderTexture(uint2 id : SV_DispatchThreadID)
+{
+    PositionMap[id] = float4(PositionBuffer[(id.x + id.y * id.x) % VertexCount], 1);
+}
