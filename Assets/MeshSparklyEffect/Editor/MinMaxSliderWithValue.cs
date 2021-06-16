@@ -7,6 +7,7 @@ using UnityEngine.UIElements;
 
 namespace UIToolkitExtensions
 {
+#if UNITY_EDITOR
     public class MinMaxSliderWithValue : VisualElement
     {
         public new class UxmlFactory : UxmlFactory<MinMaxSliderWithValue, UxmlTraits>
@@ -323,4 +324,5 @@ namespace UIToolkitExtensions
             _slider.highLimit = highLimit;
         }
     }
+#endif
 }

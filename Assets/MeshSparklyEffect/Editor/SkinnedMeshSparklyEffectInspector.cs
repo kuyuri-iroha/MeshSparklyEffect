@@ -8,6 +8,7 @@ using UnityEditor.UIElements;
 
 namespace MeshSparklyEffect
 {
+#if UNITY_EDITOR
     [CustomEditor(typeof(SkinnedMeshSparklyEffect))]
     public class SkinnedMeshSparklyEffectInspector : UnityEditor.Editor
     {
@@ -40,12 +41,10 @@ namespace MeshSparklyEffect
 
         public override VisualElement CreateInspectorGUI()
         {
-            if (!skinnedMeshSparklyEffectInspectorUXML) return new VisualElement();
-
             var meshSparklyEffect = target as SkinnedMeshSparklyEffect;
             var sparkleVFX = meshSparklyEffect.sparkleVFX;
 
-            _root = skinnedMeshSparklyEffectInspectorUXML.CloneTree();
+            _root = Resources.Load<VisualTreeAsset>("SkinnedMeshSparklyEffectInspector").CloneTree();
             _root.name = "mesh-sparkly-effect";
             _root.Bind(serializedObject);
 
@@ -205,4 +204,5 @@ namespace MeshSparklyEffect
             }
         }
     }
+#endif
 }
