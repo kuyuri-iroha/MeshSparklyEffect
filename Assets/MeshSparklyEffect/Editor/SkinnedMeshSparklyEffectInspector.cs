@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using UIToolkitExtensions;
 using UnityEditor;
@@ -9,10 +9,10 @@ using UnityEditor.UIElements;
 namespace MeshSparklyEffect
 {
 #if UNITY_EDITOR
-    [CustomEditor(typeof(MeshSparklyEffect))]
-    public class MeshSparklyEffectInspector : UnityEditor.Editor
+    [CustomEditor(typeof(SkinnedMeshSparklyEffect))]
+    public class SkinnedMeshSparklyEffectInspector : UnityEditor.Editor
     {
-        [SerializeField] private VisualTreeAsset meshSparklyEffectInspectorUXML;
+        [SerializeField] private VisualTreeAsset skinnedMeshSparklyEffectInspectorUXML;
 
         private const string NullReferenceErrorMessage = " is missing.";
 
@@ -24,13 +24,7 @@ namespace MeshSparklyEffect
         private const string ModeButtonTextOnProceduralMode = "Switch Texture Mode";
         private const string ModeButtonTextOnTextureMode = "Switch Procedural Mode";
 
-        private const string ModeButtonTextOnMeshFilterMode = "Switch SkinnedMeshRenderer Mode";
-        private const string ModeButtonTextOnSkinnedMeshRendererMode = "Switch MeshFilter Mode";
-
-        private const string ConvertButtonTextOnMapMode = "Convert to Mesh";
-        private const string ConvertButtonTextOnMeshMode = "Convert to Map";
-
-        private const string UndoRecordName = "Changed MeshSparklyEffect convert mode";
+        private const string UndoRecordName = "Changed SkinnedMeshSparklyEffect convert mode";
 
         private const float Margin = 10.0f;
 
@@ -47,10 +41,10 @@ namespace MeshSparklyEffect
 
         public override VisualElement CreateInspectorGUI()
         {
-            var meshSparklyEffect = target as MeshSparklyEffect;
+            var meshSparklyEffect = target as SkinnedMeshSparklyEffect;
             var sparkleVFX = meshSparklyEffect.sparkleVFX;
 
-            _root = Resources.Load<VisualTreeAsset>("MeshSparklyEffectInspector").CloneTree();
+            _root = Resources.Load<VisualTreeAsset>("SkinnedMeshSparklyEffectInspector").CloneTree();
             _root.name = "mesh-sparkly-effect";
             _root.Bind(serializedObject);
 
@@ -63,37 +57,6 @@ namespace MeshSparklyEffect
             var targetMeshProp = _root.Q<ObjectField>("skinned-mesh-renderer");
             targetMeshProp.RegisterValueChangedCallback(_ => OnChangedTargetMesh());
             targetMeshProp.RegisterCallback<DragExitedEvent>(_ => OnChangedTargetMesh());
-            targetMeshProp.style.display = meshSparklyEffect.useMeshFilter ? DisplayStyle.None : DisplayStyle.Flex;
-
-            var targetMeshFilterProp = _root.Q<ObjectField>("mesh-filter");
-            targetMeshFilterProp.RegisterValueChangedCallback(_ => OnChangedTargetMesh());
-            targetMeshFilterProp.RegisterCallback<DragExitedEvent>(_ => OnChangedTargetMesh());
-            targetMeshFilterProp.style.display =
-                meshSparklyEffect.useMeshFilter ? DisplayStyle.Flex : DisplayStyle.None;
-
-            var modeButton = _root.Q<Button>("mesh-mode-button");
-            modeButton.text = meshSparklyEffect.useMeshFilter
-                ? ModeButtonTextOnMeshFilterMode
-                : ModeButtonTextOnSkinnedMeshRendererMode;
-            modeButton.RegisterCallback<ClickEvent>(_ =>
-            {
-                if (modeButton.text.Equals(ModeButtonTextOnSkinnedMeshRendererMode))
-                {
-                    meshSparklyEffect.useMeshFilter = true;
-                    OnChangedTargetMesh();
-                    targetMeshProp.style.display = DisplayStyle.None;
-                    targetMeshFilterProp.style.display = DisplayStyle.Flex;
-                    modeButton.text = ModeButtonTextOnMeshFilterMode;
-                }
-                else
-                {
-                    meshSparklyEffect.useMeshFilter = false;
-                    OnChangedTargetMesh();
-                    targetMeshProp.style.display = DisplayStyle.Flex;
-                    targetMeshFilterProp.style.display = DisplayStyle.None;
-                    modeButton.text = ModeButtonTextOnSkinnedMeshRendererMode;
-                }
-            });
 
             // Parameters root
             _parametersRoot = _root.Q<VisualElement>("parameters-root");
@@ -134,44 +97,6 @@ namespace MeshSparklyEffect
             _textureModeParameter = _root.Q<VisualElement>("texture-mode-parameters");
             _textureModeParameter.style.display = sparkleVFX.useTexture ? DisplayStyle.Flex : DisplayStyle.None;
 
-            // Convert button
-            _convertButton = _root.Q<Button>("convert-button");
-            _convertButton.RegisterCallback<ClickEvent>(_ =>
-            {
-                Undo.RecordObject(meshSparklyEffect, UndoRecordName);
-
-                meshSparklyEffect.isMapMode = !meshSparklyEffect.isMapMode;
-                ApplyConvertMode();
-            });
-            ApplyConvertMode();
-            Undo.undoRedoPerformed += ApplyConvertMode;
-
-            // Bake button
-            var bakeButton = _root.Q<Button>("bake-button");
-            bakeButton.RegisterCallback<ClickEvent>(_ =>
-            {
-                RemoveWhenContains(_root, _errorMessageBox);
-
-                var path = EditorUtility.SaveFolderPanel("Save texture as EXR", "", "");
-                if (path.Length != 0)
-                {
-                    var meshName = meshSparklyEffect.useMeshFilter
-                        ? meshSparklyEffect.targetMeshFilter.name
-                        : meshSparklyEffect.targetMesh.name;
-
-                    var bytes = meshSparklyEffect.positionMap.EncodeToEXR();
-                    File.WriteAllBytes($"{path}/{meshName}_PositionMap.exr", bytes);
-                    bytes = meshSparklyEffect.normalMap.EncodeToEXR();
-                    File.WriteAllBytes($"{path}/{meshName}_NormalMap.exr", bytes);
-                    bytes = meshSparklyEffect.uvMap.EncodeToEXR();
-                    File.WriteAllBytes($"{path}/{meshName}_UVMap.exr", bytes);
-
-                    EditorUtility.DisplayDialog("Bake succeeded", $"Save to {path}", "OK");
-                }
-
-                AssetDatabase.Refresh();
-            });
-
             return _root;
         }
 
@@ -179,56 +104,33 @@ namespace MeshSparklyEffect
         {
             _lifeTimeMinMaxProp?.UnRegisterAllValueChangedCallback();
             Undo.undoRedoPerformed -= ApplyMinMaxValues;
-            Undo.undoRedoPerformed -= ApplyConvertMode;
         }
 
         private void ApplyMinMaxValues()
         {
-            var sparkleVFX = (target as MeshSparklyEffect).sparkleVFX;
+            var sparkleVFX = (target as SkinnedMeshSparklyEffect).sparkleVFX;
             _sizeMinMaxProp?.ApplyMinMaxValue(sparkleVFX.sizeMin, sparkleVFX.sizeMax,
                 sparkleVFX.sizeLowLimit, sparkleVFX.sizeHighLimit);
             _lifeTimeMinMaxProp?.ApplyMinMaxValue(sparkleVFX.lifeTimeMin, sparkleVFX.lifeTimeMax,
                 sparkleVFX.lifeTimeLowLimit, sparkleVFX.lifeTimeHighLimit);
         }
 
-        private void ApplyConvertMode()
-        {
-            var meshSparklyEffect = target as MeshSparklyEffect;
-            var meshParameters = _root?.Q<VisualElement>("mesh-parameters");
-            var convertedParameters = _root?.Q<VisualElement>("converted-parameters");
-
-            if (meshSparklyEffect.isMapMode)
-            {
-                convertedParameters.style.display = DisplayStyle.Flex;
-                meshParameters.style.display = DisplayStyle.None;
-                _convertButton.text = ConvertButtonTextOnMapMode;
-            }
-            else
-            {
-                convertedParameters.style.display = DisplayStyle.None;
-                meshParameters.style.display = DisplayStyle.Flex;
-                _convertButton.text = ConvertButtonTextOnMeshMode;
-            }
-        }
-
         private void OnChangedTargetMesh()
         {
             RemoveWhenContains(_root, _errorMessageBox);
 
-            var meshParticleEmitter = target as MeshSparklyEffect;
+            var meshSparklyEffect = target as SkinnedMeshSparklyEffect;
 
             var message = "";
-            var ableToRun = meshParticleEmitter.useMeshFilter
-                ? VerifyMeshFilterRenderer(meshParticleEmitter.targetMeshFilter, out message)
-                : VerifySkinnedMeshRenderer(meshParticleEmitter.targetMesh, out message);
+            var ableToRun = VerifySkinnedMeshRenderer(meshSparklyEffect.targetMesh, out message);
 
             if (ableToRun)
             {
                 _parametersRoot.style.display = DisplayStyle.Flex;
 
-                meshParticleEmitter.enabled = true;
+                meshSparklyEffect.enabled = true;
 
-                meshParticleEmitter.CreateMaps();
+                meshSparklyEffect.CreateMaps();
             }
             else
             {
@@ -237,7 +139,7 @@ namespace MeshSparklyEffect
                 _errorMessageBox.text = message;
                 _root.Insert(0, _errorMessageBox);
 
-                meshParticleEmitter.enabled = false;
+                meshSparklyEffect.enabled = false;
             }
         }
 
@@ -274,42 +176,9 @@ namespace MeshSparklyEffect
             return true;
         }
 
-        private static bool VerifyMeshFilterRenderer(MeshFilter meshFilter, out string errorMessage)
-        {
-            try
-            {
-                if (meshFilter == null)
-                {
-                    errorMessage = $"The MeshFilter {NullReferenceErrorMessage}";
-                    return false;
-                }
-
-                if (meshFilter.sharedMesh.isReadable == false)
-                {
-                    errorMessage = $"The Mesh in MeshFilter {NotReadableErrorMessage}";
-                    return false;
-                }
-
-                var readTest = meshFilter.sharedMesh.vertices;
-                if (readTest == null)
-                {
-                    errorMessage = $"The vertices of Mesh in SkinnedMeshRenderer {NullReferenceErrorMessage}";
-                }
-
-                errorMessage = "";
-            }
-            catch (Exception e)
-            {
-                errorMessage = $"{UnknownErrorMessage} {e.Message}";
-                return false;
-            }
-
-            return true;
-        }
-
         private void OnClickedModeButton()
         {
-            var sparkleVFX = (target as MeshSparklyEffect).sparkleVFX;
+            var sparkleVFX = (target as SkinnedMeshSparklyEffect).sparkleVFX;
 
             if (_modeSwitchButton.text.Equals(ModeButtonTextOnProceduralMode))
             {
